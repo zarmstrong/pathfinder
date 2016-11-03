@@ -1,0 +1,14 @@
+body {
+  padding-top: 50px;
+}
+.starter-template {
+  padding: 40px 15px;
+  text-align: center;
+}
+
+#clock.lead {
+	font-size:42px;
+}
+.lead.timesup {
+  background-color: #ff0000;
+}

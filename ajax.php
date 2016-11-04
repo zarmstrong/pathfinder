@@ -6,6 +6,10 @@ if ($_GET['function']=='initform')
 {
     add_inits_form();
 }
+elseif ($_GET['function']=='presentform')
+{
+    create_newsession_form();
+}
 elseif ($_POST['function'] == "attendance")
 {
     $attending_players = $_POST['players'];
@@ -14,9 +18,9 @@ elseif ($_POST['function'] == "attendance")
     foreach($attending_players as $player)  
     {
         //$mystring .= "update players set present = 1 where playerid=" . $player;
-
         $mysqli->query("update players set present = 1 where playerid=" . $player);
     }
+    $mystring='success';
     echo $mystring;
 }
 elseif ($_POST['function'] == "inits")
@@ -26,11 +30,12 @@ elseif ($_POST['function'] == "inits")
     {
         if ($init)
         {
-            $mystring .= "update players set init = $init where playerid=$playerid;\n";
+            //$mystring .= "update players set init = $init where playerid=$playerid;\n";
             $mysqli->query("update players set init = $init where playerid=$playerid");
         }
         
     }
+    $mystring='success';
     echo $mystring;        
 }else{
     //Do nothing

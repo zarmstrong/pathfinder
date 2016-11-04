@@ -47,7 +47,9 @@ function create_newsession_form()
 			'  ;
 	    }
 	    echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2">';
-        echo '<button type="submit" class="btn btn-default">Submit</button></form></div></div></div>';
+        echo '<button type="submit" class="btn btn-default">Submit</button></form></div></div>';
+        echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2" id="attenalertzone"></div></div>';
+        echo '</div>';
         ?>
 <script type="text/javascript">
 
@@ -68,7 +70,7 @@ $('#attendanceform').serialize();
         data: "function=attendance&" + $('#attendanceform').serialize(),
         success : function(text){
             if (text == "success"){
-                formSuccess();
+				showattenalert('Saved','alert-success');
             }
             else 
             {
@@ -77,6 +79,12 @@ $('#attendanceform').serialize();
         }
     });
 }
+  function showattenalert(message,alerttype) {
+    $('#attenalertzone').append('<div id="alertdiv" class="alert .out ' +  alerttype + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+    setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+    	$("#alertdiv").remove();
+    }, 2000);
+  }
 </script>
 <?php        
 	}
@@ -105,7 +113,9 @@ function add_inits_form()
 			'  ;
 	    }
 	    echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2"></div><div class="col-lg-2">';
-        echo '<button type="submit" class="btn btn-default">Submit</button></form></div></div></div>';
+        echo '<button type="submit" class="btn btn-default">Submit</button></form></div></div>';
+        echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2"></div><div class="col-lg-2" id="initsalertzone"></div></div>';
+        echo '</div>';
 ?>
 <script type="text/javascript">
 $("#initsform").submit(function(event){
@@ -117,15 +127,13 @@ $("#initsform").submit(function(event){
 }); 
 function submitInitsForm(){
     // Initiate Variables With Form Content
-$('#attendanceform').serialize();
- 
     $.ajax({
         type: "POST",
         url: "ajax.php",
         data: "function=inits&" + $('#initsform').serialize(),
         success : function(text){
             if (text == "success"){
-                formSuccess();
+				showinitsalert('Saved','alert-success');
             }
             else 
             {
@@ -134,10 +142,95 @@ $('#attendanceform').serialize();
         }
     });
 }
+  function showinitsalert(message,alerttype) {
+    $('#initsalertzone').append('<div id="alertdiv" class="alert .out ' +  alerttype + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+    setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+    	$("#alertdiv").remove();
+    }, 2000);
+  }
 </script>
 <?php
 	}
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+function add_monster_form()
+{
+	global $mysqli;
+	$result = $mysqli->query("SELECT * from creatures ");
+	if (!$result) {
+	    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+	}
+	else
+	{
+		echo '<form id="initsform" class="form-horizontal">';		
+	    while ($row = $result->fetch_assoc()) {
+			echo '
+			<div class="row">
+			    <label for="inputinit" class="col-sm-2 control-label">' . $row["name"].'</label>
+			  <div class="col-lg-2">
+			    <div class="input-group">
+			      <input type="text" id="inputinit" class="form-control" aria-label="'.$row["playerid"].'" name="playerinit['.$row["playerid"].']" value="'.$row["init"].'" >
+			    </div><!-- /input-group -->
+			  </div><!-- /.col-lg-2 -->
+			</div>
+			'  ;
+	    }
+	    echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2"></div><div class="col-lg-2">';
+        echo '<button type="submit" class="btn btn-default">Submit</button></form></div></div>';
+        echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2"></div><div class="col-lg-2" id="initsalertzone"></div></div>';
+        echo '</div>';
+?>
+<script type="text/javascript">
+$("#initsform").submit(function(event){
+    // cancels the form submission
+    event.preventDefault();
+ //var formVals = $('#initsform').serializeArray();
+ //console.log(formVals);
+    submitInitsForm();
+}); 
+function submitInitsForm(){
+    // Initiate Variables With Form Content
+    $.ajax({
+        type: "POST",
+        url: "ajax.php",
+        data: "function=inits&" + $('#initsform').serialize(),
+        success : function(text){
+            if (text == "success"){
+				showinitsalert('Saved','alert-success');
+            }
+            else 
+            {
+              console.log(text);
+            }
+        }
+    });
+}
+  function showinitsalert(message,alerttype) {
+    $('#initsalertzone').append('<div id="alertdiv" class="alert .out ' +  alerttype + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+    setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+    	$("#alertdiv").remove();
+    }, 2000);
+  }
+</script>
+<?php
+	}
+}
+
+
 
 
 ?>

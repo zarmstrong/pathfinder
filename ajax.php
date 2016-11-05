@@ -92,6 +92,21 @@ elseif ($_GET['function']=='deleteencounter')
         }  
     }     
 }
+elseif ($_GET['function']=='combattracker')
+{
+    create_combat_tracker();
+}
+elseif ($_GET['function']=='combatzone')
+{
+    if ($_GET['param1'] == 'playerinits')
+    {
+        add_inits_form();
+    }
+    elseif ($_GET['param1'] == 'showroundtracker')
+    {
+        show_round_tracker();
+    }
+}
 elseif ($_POST['function'] == "attendance")
 {
     $attending_players = $_POST['players'];
@@ -117,8 +132,26 @@ elseif ($_POST['function'] == "inits")
         }
         
     }
-    $mystring='successinits';
-    echo $mystring; 
+    $query = "select playerid, charname, LPAD(init, 2, '0') as init,LPAD(dexmod, 2, '0') as dexmod,LPAD(dex, 2, '0') as dex  from players where present=1";
+    $result = $mysqli->query($query);   
+    if (!$result) {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {   
+        while ($row = $result->fetch_assoc()) {
+            $initval = $row["init"];
+            $initval="$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"];
+            $query = "insert into round_tracker (`combatantid`, `is_player`,`init`) VALUES ('".$row['playerid']."', '1', '$initval')";
+            $resultb = $mysqli->query($query);
+
+            if (!$resultb) {
+                throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+            }
+        }
+    }    
+    $mystring='success';
+    echo $mystring;     
 }    
 elseif ($_POST['function'] == "monster")
 {       
@@ -194,9 +227,6 @@ elseif ($_POST['function'] == "encounter")
 }
 elseif ($_POST['function'] == "editencounter")
 {
-    error_log($_POST['combats_name']);
-    error_log($_POST['creaturelist']);
-    error_log($_POST['combatid']);
     $encountername = $_POST['combats_name'];
     $creature_list=trim($_POST['creaturelist'],",");
     $encounterid=$_POST['combatid'];
@@ -225,7 +255,60 @@ elseif ($_POST['function'] == "editencounter")
             }  
         echo "success";
         }
-    }    
+    }   
+}
+elseif ($_POST['function'] == "createandloadcombat")
+{
+    $encounterid=$_POST['encounterid'];
+    $query = "truncate round_tracker";
+    $result = $mysqli->query($query);
+    $query = "select combats.creatureid, creatures.showtruename, LPAD(creatures.initmod, 2, '0') as initmod,LPAD(creatures.dexmod, 2, '0') as dexmod,LPAD(creatures.dexscore, 2, '0') as dexscore,creatures.showac from combats left join creatures on creatures.creatureid=combats.creatureid where combatid=$encounterid";
+    $result = $mysqli->query($query);
+
+    if (!$result) {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {   
+        while ($row = $result->fetch_assoc()) {
+            $d20roll = crypto_rand_secure ( 1,20 );
+            $initval = ($d20roll + $row["initmod"]);
+            $initval="$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"];
+            $query = "insert into round_tracker (`combatantid`, `init`,`reveal_name`,`reveal_ac`) VALUES ('".$row['creatureid']."', '$initval','".$row["showtruename"]."','".$row["showac"]."')";
+            $resultb = $mysqli->query($query);
+
+            if (!$resultb) {
+                throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+            }
+        }
+    }
+    echo "success";
+    //add players
+    /*
+    $query = "select playerid, charname, LPAD(init, 2, '0') as init,LPAD(dexmod, 2, '0') as dexmod,LPAD(dex, 2, '0') as dex  from players where present=1";
+    $result = $mysqli->query($query);   
+    if (!$result) {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {   
+        while ($row = $result->fetch_assoc()) {
+            $initval = $row["init"];
+            echo "first init: $initval";
+            $initval="$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"];
+            echo "last init: $initval";
+            $query = "insert into round_tracker (`combatantid`, `is_player`,`init`) VALUES ('".$row['playerid']."', '1', '$initval')";
+            var_dump($row);
+            echo $query;
+            $resultb = $mysqli->query($query);
+
+            if (!$resultb) {
+                throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+            }
+        }
+    }
+    */
+
 }else{
     //Do nothing
 }

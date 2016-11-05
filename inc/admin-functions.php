@@ -99,7 +99,8 @@ function add_inits_form()
 	}
 	else
 	{
-		echo '<form id="initsform" class="form-horizontal">';		
+		echo '<form id="initsform" class="form-horizontal">';	
+		echo '<div class="col-sm-offset-1 col-md-12"><h3>Encounter Builder - Player Inits</h3></div>';
 	    while ($row = $result->fetch_assoc()) {
 			echo '
 			<div class="row">
@@ -133,7 +134,9 @@ function add_inits_form()
 	        data: "function=inits&" + $('#initsform').serialize(),
 	        success : function(text){
 	            if (text == "success"){
-					showinitsalert('Saved','alert-success');
+					//showinitsalert('Saved','alert-success');
+					console.log("saved inits, moving on");
+					getData("combatzone","showroundtracker");
 	            }
 	            else 
 	            {
@@ -459,8 +462,6 @@ function edit_monster_form($creatureid)
 
 function combat_manager()
 {
-	global $mysqli;
-
 	echo '<div class="row"><div class="col-sm-offset-1 col-lg-4">
 	<label>
 	Encounter List (click to edit)</label>
@@ -899,4 +900,150 @@ function edit_encounter_form($encounterid)
 	</script>
 <?php  
 }
+
+function create_combat_tracker()
+{
+	echo '<div id="combatzone">';
+	echo '<div class="row"><div class="col-sm-offset-1 col-lg-4">
+	<label>
+	Encounter List</label>
+';
+	show_encounter_picker();
+
+    echo '</div>';
+    echo '<div class="col-lg-4" id="encountertrackingspot">';
+	
+	//encounter form
+    //create_new_encounter_form();
+
+    echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2"></div><div class="col-lg-2" id="encounteralertzone"></div></div>';
+    echo '</div>';
+
+    echo '</div>'; //combatzone
+
+}
+
+function show_encounter_picker()
+{
+	global $mysqli;
+	$result = $mysqli->query("SELECT * from combats_name ");
+	if (!$result) {
+	    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+	    return;
+	}	
+	echo '<div class="dropdown">
+		  <button class="btn btn-default dropdown-toggle" type="button" id="dropdownMenuEncounters" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		    Encounters
+		    <span class="caret"></span>
+		  </button>';
+    echo '<ul class="dropdown-menu" id="dropdownMenuEncounters" aria-labelledby="dropdownMenuEncounters">';
+    while ($row = $result->fetch_assoc()) {
+		echo '<li data-recordid="'.$row["combatid"].'""><a href="#" id="encounter['.$row["combatid"].']" data-recordid="'.$row["combatid"].'">'.$row["combats_name"].'</a></li>';
+    }	
+    echo '  </ul>
+		  </div>';
+	echo '<div class="row"> &nbsp;</div><div class=""><form id="loadcurentencounterform" class="form-inline"><button type="submit" class="btn btn-default" name="loadenc">Load Current Encounter</button></form></div>';
+?>	
+	<script type="text/javascript">
+	$("#loadcurentencounterform").submit(function(event){
+	    // cancels the form submission
+	    event.preventDefault();
+
+		getData("combatzone","showroundtracker");
+
+	});	
+
+	$("#dropdownMenuEncounters li a").click(function(){
+	  	var recordid = $(this).parent().data("recordid");
+	  //getData("newencounter");
+	  pickEncounter(recordid)
+	});
+
+	
+
+	function pickEncounter(encounterID){
+	    // Initiate Variables With Form Content
+	    console.log("s");
+	    $.ajax({
+	        type: "POST",
+	        url: "ajax.php",
+	        data: "function=createandloadcombat&encounterid="+encounterID,
+	        success : function(text){
+	            if (text == "success"){
+					//showencounteralert('Saved','alert-success');
+					getData("combatzone","playerinits");
+	            }
+	            else 
+	            {
+	              console.log(text);
+	            }
+	        }
+	    });
+	}
+
+	</script>
+<?php
+}
+
+function show_round_tracker()
+{
+	global $mysqli;
+	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac 
+								from round_tracker as rt 
+								left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
+								left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
+								order by init desc, rt.uid asc");
+	if (!$result) {
+	    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+	    return;
+	}	
+	echo '<div class="list-group" id="combat_tracker_list">
+       
+            <ul class="list-group" id="combat_tracker_list" >';
+    $count=1;
+    while ($row = $result->fetch_assoc()) {
+    	$uid = $row["uid"];
+    	$combatantid=$row["combatantid"];
+    	$creaturename=$row["creaturename"];
+    	$fakename=$row["fakename"];
+    	$is_player=$row["is_player"];
+    	$init=$row["init"];
+    	$reveal_name=$row["reveal_name"];
+    	$turn_start=$row["turn_start"];
+    	$reveal_ac=$row["reveal_ac"];
+
+		echo '<li class="list-group-item" data-count="'.$count.'" data-recordid="'.$combatantid.'"">
+				<a href="#" id="combatantid['.$combatantid.']" data-recordid="'.$uid.'">Init: '.$init.' -- '. ($is_player ? $creaturename : 
+				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).'</a></li>';
+				$count++;
+    }	
+    echo '  </ul>
+        </div>';
+    $result = $mysqli->query("SELECT count(*) as count from turn"); 
+    $row = $result->fetch_assoc();
+    if ($row["count"] == "0" )
+    {
+    	//start combat button here
+    }
+    else
+    {
+    	//continue combat stuff here
+    }
+}
+
+function crypto_rand_secure($min, $max) {
+        $range = $max - $min;
+        if ($range == 0) return $min; // not so random...
+        $log = log($range, 2);
+        $bytes = (int) ($log / 8) + 1; // length in bytes
+        $bits = (int) $log + 1; // length in bits
+        $filter = (int) (1 << $bits) - 1; // set all lower bits to 1
+        do {
+            $rnd = hexdec(bin2hex(openssl_random_pseudo_bytes($bytes, $s)));
+            $rnd = $rnd & $filter; // discard irrelevant bits
+        } while ($rnd >= $range);
+        return $min + $rnd;
+}
+
+
 ?>

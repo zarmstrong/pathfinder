@@ -2,6 +2,7 @@
 require_once('inc/dbconn.php') ;
 require_once('inc/admin-functions.php') ;
 global $mysql;
+error_log($_GET['function']);
 if ($_GET['function']=='initform')
 {
     add_inits_form();
@@ -45,6 +46,51 @@ elseif ($_GET['function'] == "deletecreature")
     {
         echo "success"; 
     } 
+}
+elseif ($_GET['function']=='encounterform')
+{
+    combat_manager();
+}
+elseif ($_GET['function']=='newencounter')
+{
+    if ($_GET['param1'] == 'edit')
+    {
+        edit_encounter_form($_GET['param2']);
+    }
+    else
+    {
+        create_new_encounter_form();
+    }    
+}
+elseif ($_GET['function']=='editencounter')
+{
+    edit_encounter_form($_GET['encounterid']);
+}
+elseif ($_GET['function']=='encounterlist')
+{
+    create_encounter_list();
+}
+elseif ($_GET['function']=='deleteencounter')
+{
+    error_log("IN THE DELETE");
+    $combatid=$_GET["combatid"];
+    $query = "delete from combats_name where `combatid`='$combatid'";
+    $result = $mysqli->query($query);
+    if (!$result) {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {
+        $query = "delete from combats where `combatid`='$combatid'";
+        $result = $mysqli->query($query);
+        if (!$result) {
+            throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+        }
+        else
+        {
+            echo "success"; 
+        }  
+    }     
 }
 elseif ($_POST['function'] == "attendance")
 {
@@ -122,6 +168,64 @@ elseif ($_POST['function'] == "editmonster")
     {
         echo "success"; 
     } 
+}
+elseif ($_POST['function'] == "encounter")
+{
+    $encountername = $_POST['combats_name'];
+    $creature_list=trim($_POST['creaturelist'],",");
+    $query = "INSERT INTO combats_name (`combats_name`) VALUES ('$encountername')";
+    $result = $mysqli->query($query);
+    if (!$result) {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {
+        $combatid=$mysqli->insert_id;
+        foreach (explode(",",$creature_list) as $creatureid)  
+        {
+            $query = "INSERT INTO combats (`combatid`, `creatureid`) VALUES ('$combatid', '$creatureid')"; 
+            $result = $mysqli->query($query);
+            if (!$result) {
+                throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+            }           
+        }  
+        echo "success";
+    }
+}
+elseif ($_POST['function'] == "editencounter")
+{
+    error_log($_POST['combats_name']);
+    error_log($_POST['creaturelist']);
+    error_log($_POST['combatid']);
+    $encountername = $_POST['combats_name'];
+    $creature_list=trim($_POST['creaturelist'],",");
+    $encounterid=$_POST['combatid'];
+    $query = "update combats_name set combats_name='$encountername' where combatid=$encounterid";
+    $result = $mysqli->query($query);
+    if (!$result) {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {
+        $query = "delete from combats where combatid=$encounterid";
+        $result = $mysqli->query($query);
+        if (!$result) {
+            throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+        }
+        else
+        {
+            foreach (explode(",",$creature_list) as $creatureid)  
+            {
+                $query = "INSERT INTO combats (`combatid`, `creatureid`) VALUES ('$encounterid', '$creatureid')"; 
+                error_log( $query);
+                $result = $mysqli->query($query);
+                if (!$result) {
+                    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+                }           
+            }  
+        echo "success";
+        }
+    }    
 }else{
     //Do nothing
 }

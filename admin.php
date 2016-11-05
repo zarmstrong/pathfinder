@@ -17,7 +17,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	<script src="../timer/jquery.countdown.min.js">  crossorigin="anonymous"></script>
+	
 	<?php include 'admin-head.php'; ?>
     <div class="container">
 
@@ -54,12 +54,31 @@ include("inc/admin-functions.php");
   <div class="row">
      <div class="col-md-1"> &nbsp;</div>
   </div>  
-  <span id="combatform">
+  <span id="encounterform">
     <?php  ?>
   </span>
 </div>  
 
     </div><!-- /.container -->
+<?php
+  echo '
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Confirm Delete of <b><i class="title"></i></b>
+                </div>
+                <div class="modal-body">
+                    Are you sure you wish to delete this <span class="objecttype"></span>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>';
+?>        
   </body>
 <script type="text/javascript">
   $(".navbar-nav a").on('click',function(e) {
@@ -93,4 +112,31 @@ function getData(id,param1,param2)
 }
 
 </script>  
+
+  <script type="text/javascript">
+
+  $('#confirm-delete').on('click', '.btn-ok', function(e) {
+    var $modalDiv = $(e.delegateTarget);
+    var id = $(this).data('recordId');
+    $modalDiv.addClass('loading');
+    $.post('ajax.php?function=deleteencounter&combatid=' + id, function(data)
+    { 
+      console.log(data);
+    }).then(function() {
+       $modalDiv.modal('hide').removeClass('loading');
+      getData("encounterlist");
+    })});
+
+  // Bind to modal opening to set necessary data properties to be used to make request
+  $('#confirm-delete').on('show.bs.modal', function(e) {
+    var data = $(e.relatedTarget).data();
+    $('.title', this).text(data.recordTitle);
+    $('.objecttype', this).text(data.objecttype);
+    $('.btn-ok', this).data('recordId', data.recordId);
+  });
+
+  $(document).ready(function() {
+     $('#confirm-delete').modal(options) 
+  }); 
+  </script>
 </html>

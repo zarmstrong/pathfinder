@@ -14,7 +14,7 @@
             <li class="active"><a href="#attendance" onclick="getData('presentform')">Attendance</a></li>
             <li><a href="#init" onclick="getData('initform')">Initiative Tracker</a></li>
             <li><a href="#monsters" onclick="getData('monsterform')">Monster Manager</a></li>
-            <li><a href="#combat">Combat Manager</a></li>
+            <li><a href="#combat" onclick="getData('encounterform')">Combat Manager</a></li>
           </ul>
         </div><!--/.nav-collapse -->
       </div>
@@ -23,4 +23,6 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 require_once('inc/dbconn.php') ;
+
 ?>
+

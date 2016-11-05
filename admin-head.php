@@ -13,7 +13,7 @@
           <ul class="nav navbar-nav">
             <li class="active"><a href="#attendance" onclick="getData('presentform')">Attendance</a></li>
             <li><a href="#init" onclick="getData('initform')">Initiative Tracker</a></li>
-            <li><a href="#monsters">Monster Manager</a></li>
+            <li><a href="#monsters" onclick="getData('monsterform')">Monster Manager</a></li>
             <li><a href="#combat">Combat Manager</a></li>
           </ul>
         </div><!--/.nav-collapse -->

@@ -9,11 +9,8 @@
     <!-- Bootstrap -->
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
-
     <!-- Custom styles for this template -->
     <link href="style.css" rel="stylesheet">
-
-
   </head>
   <body>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
@@ -22,8 +19,6 @@
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	<script src="../timer/jquery.countdown.min.js">  crossorigin="anonymous"></script>
 	<?php include 'admin-head.php'; ?>
-
-
     <div class="container">
 
 <?php
@@ -47,19 +42,22 @@ include("inc/admin-functions.php");
     <?php  ?>
   </span>
 </div>
-<div class="content" id="combat" style='display:none;'>
-  <div class="row">
-     <div class="col-md-1"> &nbsp;</div>
-  </div>  
-    <?php  ?>
-</div>
 <div class="content" id="monsters" style='display:none;'>
   <div class="row">
      <div class="col-md-1"> &nbsp;</div>
   </div>  
+  <span id="monsterform">
     <?php  ?>
+  </span>
 </div>
-  
+<div class="content" id="combat" style='display:none;'>
+  <div class="row">
+     <div class="col-md-1"> &nbsp;</div>
+  </div>  
+  <span id="combatform">
+    <?php  ?>
+  </span>
+</div>  
 
     </div><!-- /.container -->
   </body>
@@ -79,20 +77,19 @@ function formSuccess(){
     $( "#msgSubmit" ).removeClass( "hidden" );
 }
 
-function getData(id)
+function getData(id,param1,param2)
 {
+  var param1 = (typeof param1 !== 'undefined') ?  param1 : '0';
+  var param2 = (typeof param2 !== 'undefined') ?  param2 : '0';
    $.ajax({
-
      type: "GET",
      url: 'ajax.php',
-     data: "function=" + id, // appears as $_GET['id'] @ your backend side
+     data: "function=" + id + "&param1="+param1 + "&param2="+param2, // appears as $_GET['id'] @ your backend side
      success: function(data) {
            // data is ur summary
           $('#'+id).html(data);
      }
-
    });
-
 }
 
 </script>  

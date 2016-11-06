@@ -997,11 +997,12 @@ function show_round_tracker()
 	    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
 	    return;
 	}	
-	echo '<div class="list-group" id="combat_tracker_list">
+	echo '<div class="row"><div class="list-group col-sm-offset-1 col-lg-6" id="combat_tracker_div">
        
             <ul class="list-group" id="combat_tracker_list" >';
     $count=1;
     while ($row = $result->fetch_assoc()) {
+    	$acwords='';
     	$uid = $row["uid"];
     	$combatantid=$row["combatantid"];
     	$creaturename=$row["creaturename"];
@@ -1011,26 +1012,245 @@ function show_round_tracker()
     	$reveal_name=$row["reveal_name"];
     	$turn_start=$row["turn_start"];
     	$reveal_ac=$row["reveal_ac"];
-
-		echo '<li class="list-group-item" data-count="'.$count.'" data-recordid="'.$combatantid.'"">
-				<a href="#" id="combatantid['.$combatantid.']" data-recordid="'.$uid.'">Init: '.$init.' -- '. ($is_player ? $creaturename : 
-				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).'</a></li>';
+    	if (!$is_player)
+    	{
+    		$resultb = $mysqli->query("SELECT * from creatures where creatureid=$combatantid");
+    		$rowb = $resultb->fetch_assoc();
+    		$creatureAC=$rowb['ac'];
+    		$acwords=" <strong>AC:</strong> $creatureAC";
+    	}
+		echo '<li class="list-group-item" data-count="'.$count.'" data-recordid="'.$combatantid.'" data-uid="'.$uid.'"  data-isplayer="'.($is_player ? $is_player : "0").'">
+				<span id="combatantid['.$combatantid.']" data-isplayer="'.($is_player ? $is_player : "0").'" data-recordid="'.$uid.'">
+				Init: '.$init.' -- '. ($is_player ? $creaturename : 
+				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).$acwords.'</span>';
+		if (!$is_player)
+		{
+		echo '  <span class="pull-right">
+					<label><input onchange="changedbvalforcreature(this)" name="checkbox_'.$row["uid"].'_1" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_ac"'.($reveal_ac ? " checked" : "").'>Show AC</label>
+					<label><input onchange="changedbvalforcreature(this)" name="checkbox_'.$row["uid"].'_2" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_truename"'.($reveal_name ? " checked" : "").'>Show True Name</label>
+					<label><input onchange="changedbvalforcreature(this)" name="checkbox_'.$row["uid"].'_3" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_in_tracker">Show in Tracker</label>
+				</span>';
+		}
+		echo '  </li>';
 				$count++;
     }	
     echo '  </ul>
-        </div>';
+        </div></div>';
+    echo '<div class="row"><div class="col-sm-offset-1 col-lg-6" id="encounter_controls">
+    </div></div>';
+
+?>
+	<script type="text/javascript">
+		getData("encounter_controls");
+	function changedbvalforcreature(which)
+	{
+		console.log($(which).data());
+		var dbaction = $(which).data("dbaction");
+		var uid = $(which).data("uid");
+		console.log("UID:" + uid + " action: " + dbaction)		
+		/// add the ajax to do stuff
+	}
+		
+	</script>
+<?php
+}
+
+function encounter_controls()
+{
+	global $mysqli;
+
     $result = $mysqli->query("SELECT count(*) as count from turn"); 
     $row = $result->fetch_assoc();
     if ($row["count"] == "0" )
     {
     	//start combat button here
-    }
-    else
-    {
-    	//continue combat stuff here
-    }
-}
+    	echo '<form id="startcurrentencounterform" class="form-inline">
+    			<button type="submit" class="btn btn-default" name="startenc">Start This Encounter</button>
+    		  </form>';
+?>
+	<script type="text/javascript">
+	$("#startcurrentencounterform").submit(function(event){
+	    // cancels the form submission
+	    event.preventDefault();
 
+	    var this_master = $("#combat_tracker_list");
+	   	this_master.find('li').each( function () {
+	        var listitem = $(this);
+	        if (listitem.data('count') == 1)
+	        {
+	        	startingcreature=listitem.data('recordid');
+	        	startingcreatureuid=listitem.data('uid');
+	        	startingcreatureisplayer=listitem.data('isplayer');
+	        	$(listitem).addClass("active");
+	        }
+	        else
+	        {
+	        	$(listitem).removeClass("active");
+	        }
+		}); 
+		console.log("starting creature: "+startingcreature);
+	    $.ajax({
+	        type: "POST",
+	        url: "ajax.php",
+	        data: "function=startencounter&nextcreature="+startingcreature+"&nextcreatureuid="+startingcreatureuid+"&is_player="+startingcreatureisplayer,
+	        success : function(text){
+	            if (text == "success"){
+					getData("encounter_controls");
+
+	            }
+	            else 
+	            {
+	              console.log(text);
+	            }
+	        }
+	    });	    
+
+	});	
+
+	</script>
+<?php    		  
+    }
+    else //not starting a new encounter; continue
+    {
+	    $result = $mysqli->query("SELECT * from turn"); 
+	    $row = $result->fetch_assoc();
+	    $round_number=$row['round_number'];
+	    $creatureid=$row['creatureid'];
+	    $uid=$row['uid'];
+	    $is_player=$row['is_player'];
+
+	    //now find out who is next
+	    $get_next=false;
+	    $got_next=false;
+	    $result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac 
+								from round_tracker as rt 
+								left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
+								left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
+								order by init desc, rt.uid asc"); 
+		while ($row = $result->fetch_assoc()) {
+			if ($get_next)
+			{
+				$get_next=false;
+				$got_next=true;
+			    $nextcreatureid=$row['creatureid'];
+			    $nextuid=$row['uid'];
+			    $nextis_player=$row['is_player'];
+			}
+			else
+			{
+				if ($row['uid']==$uid)
+				{
+					$get_next=true;
+				}
+			}
+		}
+		$nextround=$round_number;
+		if (!$got_next) //didn't find a player after, the round must be over.
+		{
+			$nextround=$round_number+1;
+		    $result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac 
+									from round_tracker as rt 
+									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
+									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
+									order by init desc, rt.uid asc limit 1");	
+	 	   	$row = $result->fetch_assoc();
+		    $nextcreatureid=$row['creatureid'];
+		    $nextuid=$row['uid'];
+		    $nextis_player=$row['is_player'];											
+
+		}
+
+    	//continue combat stuff here
+    	echo '<form id="startnextturnform" class="form-inline">
+    			<button type="submit" class="btn btn-default" name="startenc">Start Next Turn</button>
+    			<input type="hidden" id="creatureid" name="creatureid" value="'.$creatureid.'">
+    			<input type="hidden" id="uid" name="uid" value="'.$uid.'">
+    			<input type="hidden" id="is_player" name="is_player" value="'.$is_player.'">
+    			<input type="hidden" id="round_number" name="round_number" value="'.$round_number.'">
+    		  </form>';
+?>
+	<script type="text/javascript">
+    var creatureid = $("#uid").val();
+    console.log(creatureid);
+    var this_master = $("#combat_tracker_list");
+   	this_master.find('li').each( function () {
+        var listitem = $(this);
+        if (listitem.data('uid') == creatureid)
+        {
+        	$(listitem).addClass("active");
+        }
+        else
+        {
+        	$(listitem).removeClass("active");
+        }
+	}); 
+
+	$("#startnextturnform").submit(function(event){
+	    // cancels the form submission
+	    event.preventDefault();
+
+	    var getnextitem=false;
+	    var setnextitem=false;
+	    var round_number=0;
+	    var this_master = $("#combat_tracker_list");
+	   	this_master.find('li').each( function () {
+	        var listitem = $(this);
+	        if ($(listitem).hasClass('active'))
+	        {	
+	        	getnextitem=true;
+	        	$(listitem).removeClass("active");
+
+	        }
+	        else if (getnextitem==true)
+	        {
+	        	nextcreature=listitem.data('recordid');
+	        	nextcreatureisplayer=listitem.data('isplayer');
+		        nextcreatureuid=listitem.data('uid');
+	        	$(listitem).addClass("active");
+	        	getnextitem=false;
+	        	setnextitem=true;
+	        }
+		}); 
+		if (setnextitem==false)
+		{
+		   	this_master.find('li').each( function () {
+		        var listitem = $(this);
+		        if (listitem.data('count') == 1)
+		        {
+		        	nextcreature=listitem.data('recordid');
+		        	nextcreatureuid=listitem.data('uid');
+		        	nextcreatureisplayer=listitem.data('isplayer');
+		        	$(listitem).addClass("active");
+		        }
+		        else
+		        {
+		        	$(listitem).removeClass("active");
+		        }
+			}); 
+		}
+		console.log("startnextturnform 1: " +startingcreature);
+	    $.ajax({
+	        type: "POST",
+	        url: "ajax.php",
+	        data: "function=startencounter&nextcreature="+nextcreature+"&nextcreatureuid="+nextcreatureuid+"&is_player="+nextcreatureisplayer+"&roundnum="+round_number,
+	        success : function(text){
+	            if (text == "success"){
+					getData("encounter_controls");
+
+	            }
+	            else 
+	            {
+	              console.log("startnextturnform: " +text);
+	            }
+	        }
+	    });	    
+
+	});	
+
+	</script>
+<?php   
+    }	
+}
 function crypto_rand_secure($min, $max) {
         $range = $max - $min;
         if ($range == 0) return $min; // not so random...

@@ -107,6 +107,10 @@ elseif ($_GET['function']=='combatzone')
         show_round_tracker();
     }
 }
+elseif ($_GET['function']=='encounter_controls')
+{
+    encounter_controls();
+}
 elseif ($_POST['function'] == "attendance")
 {
     $attending_players = $_POST['players'];
@@ -150,6 +154,8 @@ elseif ($_POST['function'] == "inits")
             }
         }
     }    
+    $query = "truncate turn";
+    $result = $mysqli->query($query);    
     $mystring='success';
     echo $mystring;     
 }    
@@ -308,7 +314,41 @@ elseif ($_POST['function'] == "createandloadcombat")
         }
     }
     */
+}
+elseif ($_POST['function'] == "startencounter")
+{
 
+    $nextcreature=$_POST['nextcreature'];
+    $is_player=$_POST['is_player'];
+    $uid=$_POST['nextcreatureuid'];
+
+    // find out/set/increment round number
+    $result = $mysqli->query("SELECT * from turn"); 
+    $row = $result->fetch_assoc();
+    $round_number=$row['round_number'];
+    if (!$round_number) //not yet set, so make it round 1
+        $round_number=1;
+    $current_combatantid=$row['uid'];
+
+    //find the last combatant in the turn
+    $query = "SELECT * from round_tracker order by init asc, uid desc limit 1";
+    $result = $mysqli->query($query); 
+    $row = $result->fetch_assoc();
+    if ($current_combatantid == $row['uid'])
+        $round_number++;
+
+    if ($is_player)
+    {  
+        $query="UPDATE round_tracker set turn_start = now() where uid = $uid";
+        $result = $mysqli->query($query);  
+
+    }
+    $query = "truncate turn";
+    $result = $mysqli->query($query);    
+    $query = "INSERT INTO turn (`uid`,`round_number`, `creatureid`, `is_player`) VALUES ('$uid','$round_number', '$nextcreature','$is_player')"; 
+    $result = $mysqli->query($query);  
+
+    echo "success";
 }else{
     //Do nothing
 }

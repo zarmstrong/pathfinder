@@ -11,8 +11,9 @@
         </div>
         <div id="navbar" class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
-            <li class="active"><a href="#">Turn Timer</a></li>
-            <li><a href="#init">Initiative</a></li>
+            <li class="active"><a href="#">Rise of the Runelords</a></li>
+            <!-- <li class="active"><a href="#">Turn Timer</a></li>
+            <li><a href="#init">Initiative</a></li>-->
           </ul>
         </div><!--/.nav-collapse -->
       </div>

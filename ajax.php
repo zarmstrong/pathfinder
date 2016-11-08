@@ -349,6 +349,28 @@ elseif ($_POST['function'] == "startencounter")
     $result = $mysqli->query($query);  
 
     echo "success";
+}
+elseif ($_POST['function'] == "changecreatureval")
+{
+    $uid=$_POST['uid'];
+    $value=$_POST['value'];    
+    $action=$_POST['action'];
+    switch ($action)
+    {
+        case "show_in_tracker":
+            $field="";
+        break;
+        case "reveal_name":
+            $field="";
+        break;
+        case "reveal_ac":
+            $field="";        
+        break;
+
+    }
+    $query="UPDATE round_tracker set $action = $value where uid = $uid";
+    $result = $mysqli->query($query);  
+
 }else{
     //Do nothing
 }

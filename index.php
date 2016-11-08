@@ -22,11 +22,28 @@
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
 	<script src="../timer/jquery.countdown.min.js">  crossorigin="anonymous"></script>
-	<?php include 'head.php'; ?>
+	<?php 
+  include 'head.php'; 
+  include 'inc/functions.php';
+  ?>
+
+  <div class="container-fluid">
+    <div class="row">
+      <div class="col-md-4" id="leftcolumn"><?php show_turn_data(); ?></div>
+      <div class="col-md-4" id="middlecolumn">.col-md-4</div>
+      <div class="col-md-4" id="rightcolumn">.col-md-4</div>
+    </div>
 
 
-    <div class="container">
+<?php
 
+
+?>
+<?php 
+
+$useold=0;
+if ($useold)
+{?>
       <div class="starter-template">
         <h1>Pathfinder Turn Timer</h1>
         <p class="lead">Magic is here...</p>
@@ -133,8 +150,31 @@
 
   $('div#clock').countdown('stop');
 </script>
+<?php
+}
+?>
 
 
+<script type="text/javascript">
+function getData(id,param1,param2)
+{
+  var param1 = (typeof param1 !== 'undefined') ?  param1 : '0';
+  var param2 = (typeof param2 !== 'undefined') ?  param2 : '0';
+   $.ajax({
+     type: "GET",
+     url: 'feajax.php',
+     data: "function=" + id + "&param1="+param1 + "&param2="+param2, // appears as $_GET['id'] @ your backend side
+     success: function(data) {
+           // data is ur summary
+          $('#'+id).html(data);
+     }
+   });
+}
+
+setInterval(function() {
+  getData("leftcolumn");
+}, 1000);
+</script>
   </body>
 </html>
 

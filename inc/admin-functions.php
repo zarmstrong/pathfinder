@@ -988,7 +988,7 @@ function show_encounter_picker()
 function show_round_tracker()
 {
 	global $mysqli;
-	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac 
+	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker 
 								from round_tracker as rt 
 								left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 								left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -1012,6 +1012,7 @@ function show_round_tracker()
     	$reveal_name=$row["reveal_name"];
     	$turn_start=$row["turn_start"];
     	$reveal_ac=$row["reveal_ac"];
+    	$show_in_tracker=$row["show_in_tracker"];
     	if (!$is_player)
     	{
     		$resultb = $mysqli->query("SELECT * from creatures where creatureid=$combatantid");
@@ -1026,9 +1027,9 @@ function show_round_tracker()
 		if (!$is_player)
 		{
 		echo '  <span class="pull-right">
-					<label><input onchange="changedbvalforcreature(this)" name="checkbox_'.$row["uid"].'_1" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_ac"'.($reveal_ac ? " checked" : "").'>Show AC</label>
-					<label><input onchange="changedbvalforcreature(this)" name="checkbox_'.$row["uid"].'_2" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_truename"'.($reveal_name ? " checked" : "").'>Show True Name</label>
-					<label><input onchange="changedbvalforcreature(this)" name="checkbox_'.$row["uid"].'_3" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_in_tracker">Show in Tracker</label>
+					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_1" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="reveal_ac"'.($reveal_ac ? " checked" : "").'>Reveal AC</label>
+					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_2" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="reveal_name"'.($reveal_name ? " checked" : "").'>Reveal Name</label>
+					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_3" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_in_tracker"'.($show_in_tracker ? " checked" : "").'>Show in Tracker</label>
 				</span>';
 		}
 		echo '  </li>';
@@ -1042,13 +1043,29 @@ function show_round_tracker()
 ?>
 	<script type="text/javascript">
 		getData("encounter_controls");
-	function changedbvalforcreature(which)
+	function changedvalforcreature(which)
 	{
-		console.log($(which).data());
 		var dbaction = $(which).data("dbaction");
 		var uid = $(which).data("uid");
-		console.log("UID:" + uid + " action: " + dbaction)		
-		/// add the ajax to do stuff
+
+		var setVal=0;
+		if (which.checked)
+			setVal=1;
+
+	    $.ajax({
+	        type: "POST",
+	        url: "ajax.php",
+	        data: "function=changecreatureval&action="+dbaction+"&uid="+uid+"&value="+setVal,
+	        success : function(text){
+	            if (text == "success"){
+	            	console.log("saved");
+	            }
+	            else 
+	            {
+	              console.log(text);
+	            }
+	        }
+	    });		
 	}
 		
 	</script>
@@ -1228,7 +1245,6 @@ function encounter_controls()
 		        }
 			}); 
 		}
-		console.log("startnextturnform 1: " +startingcreature);
 	    $.ajax({
 	        type: "POST",
 	        url: "ajax.php",

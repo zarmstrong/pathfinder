@@ -7,6 +7,10 @@ if ($_GET['function']=='initform' or $_GET['function']=='leftcolumn')
 {
     show_turn_data();
 }
+elseif ($_GET['function']=='middlecolumn')
+{
+    show_round_info();
+}
 else{
     //Do nothing
 }

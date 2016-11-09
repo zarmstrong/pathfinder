@@ -13,6 +13,22 @@
     <link href="style.css" rel="stylesheet">
   </head>
   <body>
+    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    Confirm Delete of <b><i class="title"></i></b>
+                </div>
+                <div class="modal-body">
+                    Are you sure you wish to delete this <span class="objecttype"></span>?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+                    <a class="btn btn-danger btn-ok">Delete</a>
+                </div>
+            </div>
+        </div>
+    </div>    
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
@@ -68,25 +84,6 @@ include("inc/admin-functions.php");
 </div>  
 
     </div><!-- /.container -->
-<?php
-  echo '
-    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    Confirm Delete of <b><i class="title"></i></b>
-                </div>
-                <div class="modal-body">
-                    Are you sure you wish to delete this <span class="objecttype"></span>?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-danger btn-ok">Delete</a>
-                </div>
-            </div>
-        </div>
-    </div>';
-?>        
   </body>
 <script type="text/javascript">
   $(".navbar-nav a").on('click',function(e) {

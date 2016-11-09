@@ -17,7 +17,7 @@ function show_turn_data()
 	        $round_number=1;
 	    $current_combatantid=$row['uid'];
 
-		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker 
+		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker 
 									from round_tracker as rt 
 									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -42,6 +42,7 @@ function show_turn_data()
 	    	$turn_start=$row["turn_start"];
 	    	$reveal_ac=$row["reveal_ac"];
 	    	$show_in_tracker=$row["show_in_tracker"];
+	    	$image=$row["image"];
 	    	if ($current_combatantid == $uid)
 	    	{
 	    		$current_creature_uid=$uid;
@@ -78,6 +79,8 @@ function show_turn_data()
 						//not a player, but show this monster data
 						echo '<h2>Current turn: '.($reveal_name ? "$creaturename" : $fakename ). '</h2>'
 							 .'<span id="nextcreaturename"></span><br/>';
+						if (isset($image))
+							echo '<span class="col-xs-7 "><img src="uploads/'.$image.'" class="img-thumbnail" alt="Responsive image"></span>';
 
 					}
 				}
@@ -162,12 +165,81 @@ function show_turn_data()
 <?php           
 }
 
-/*
+
+
+
+function show_round_info()
+{
+	global $mysqli;
+
+    $result = $mysqli->query("SELECT count(*)  as count from turn"); 
+    $row = $result->fetch_assoc();
+    if ($row["count"] == "0" )
+   		echo "Combat has not yet begun...";
+   	else {
+		//get the current thing's turn.
+	    $result = $mysqli->query("SELECT * from turn"); 
+	    $row = $result->fetch_assoc();
+	    $round_number=$row['round_number'];
+	    if (!$round_number) //not yet set, so make it round 1
+	        $round_number=1;
+	    $current_combatantid=$row['uid'];
+
+		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed
+									from round_tracker as rt 
+									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
+									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
+									order by init desc, rt.uid asc");
+		if (!$result) {
+		    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+		    return;
+		}	
+		echo '<div class="row">
+				<div class="col-xs-12"><h1>Combat Tracker - Round '.$round_number.'</h1></div>
+				<div class="col-xs-12" id="combat_tracker_div">';
+	    echo '<ul class="list-group">';
+	    while ($row = $result->fetch_assoc()) {
+	    	$acwords='';
+	    	$uid = $row["uid"];
+	    	$combatantid=$row["combatantid"];
+	    	$creaturename=$row["creaturename"];
+	    	$fakename=$row["fakename"];
+	    	$is_player=$row["is_player"];
+	    	$init=$row["init"];
+	    	$reveal_name=$row["reveal_name"];
+	    	$turn_start=$row["turn_start"];
+	    	$reveal_ac=$row["reveal_ac"];
+	    	$show_in_tracker=$row["show_in_tracker"];	
+	    	$killed=$row["killed"];
+
+
+	    	if ($show_in_tracker)
+	    	{
+	    		if ($is_player == '1')
+	    		{
+					echo '<li class="list-group-item list-group-item-success">'.$creaturename.'</li>';
+							
+				}
+				else
+				{
+					$acwords="";
+					$deathwords="";
+		    		if ($reveal_ac)
+		    		{
 			    		$resultb = $mysqli->query("SELECT * from creatures where creatureid=$combatantid");
 			    		$rowb = $resultb->fetch_assoc();
 			    		$creatureAC=$rowb['ac'];
-			    		$acwords=" <strong>AC:</strong> $creatureAC";	
-*/
+			    		$acwords='<span class="badge"><strong>AC:</strong> '.$creatureAC.'</span>';
+		    		}
+		    		if ($killed)
+		    			$deathwords='<i class="glyphicon-skull"></i>';
+					//not a player, but show this monster data
+					echo '<li class="list-group-item list-group-item-danger">'.$deathwords.($reveal_name ? "$creaturename" : $fakename ).$acwords. '</li>';
 
-
+				}
+			}
+	    }
+	    echo '</ul>';
+	}
+}
 ?>

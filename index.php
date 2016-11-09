@@ -11,8 +11,9 @@
 	<!-- Latest compiled and minified CSS -->
 	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-    <!-- Custom styles for this template -->
-    <link href="style.css" rel="stylesheet">
+  <!-- Custom styles for this template -->
+  <link href="style.css" rel="stylesheet">
+  <link href="css/bootstrap.icon-large.min.css" rel="stylesheet">    
 
 
   </head>
@@ -30,15 +31,11 @@
   <div class="container-fluid">
     <div class="row">
       <div class="col-md-4" id="leftcolumn"><?php show_turn_data(); ?></div>
-      <div class="col-md-4" id="middlecolumn">.col-md-4</div>
+      <div class="col-md-4" id="middlecolumn"><?php show_round_info(); ?></div>
       <div class="col-md-4" id="rightcolumn">.col-md-4</div>
     </div>
 
 
-<?php
-
-
-?>
 <?php 
 
 $useold=0;
@@ -174,6 +171,9 @@ function getData(id,param1,param2)
 setInterval(function() {
   getData("leftcolumn");
 }, 1000);
+setInterval(function() {
+  getData("middlecolumn");
+}, 5000);
 </script>
   </body>
 </html>

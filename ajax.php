@@ -37,7 +37,7 @@ elseif ($_GET['function']=='monsterlist')
 elseif ($_GET['function'] == "deletecreature")
 {
     $creatureid=$_GET["creatureid"];
-    $query = "delete from creatures where `creatureid`='$creatureid'";
+    $query = "DELETE from creatures where `creatureid`='$creatureid'";
     $result = $mysqli->query($query);
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -72,16 +72,15 @@ elseif ($_GET['function']=='encounterlist')
 }
 elseif ($_GET['function']=='deleteencounter')
 {
-    error_log("IN THE DELETE");
     $combatid=$_GET["combatid"];
-    $query = "delete from combats_name where `combatid`='$combatid'";
+    $query = "DELETE from combats_name where `combatid`='$combatid'";
     $result = $mysqli->query($query);
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
     }
     else
     {
-        $query = "delete from combats where `combatid`='$combatid'";
+        $query = "DELETE from combats where `combatid`='$combatid'";
         $result = $mysqli->query($query);
         if (!$result) {
             throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -115,11 +114,11 @@ elseif ($_POST['function'] == "attendance")
 {
     $attending_players = $_POST['players'];
     //var_dump($attending_players);
-    $mysqli->query("update players set present = 0");
+    $mysqli->query("UPDATE players set present = 0");
     foreach($attending_players as $player)  
     {
-        //$mystring .= "update players set present = 1 where playerid=" . $player;
-        $mysqli->query("update players set present = 1 where playerid=" . $player);
+        //$mystring .= "UPDATE players set present = 1 where playerid=" . $player;
+        $mysqli->query("UPDATE players set present = 1 where playerid=" . $player);
     }
     $mystring='success';
     echo $mystring;
@@ -131,12 +130,12 @@ elseif ($_POST['function'] == "inits")
     {
         if ($init)
         {
-            //$mystring .= "update players set init = $init where playerid=$playerid;\n";
-            $mysqli->query("update players set init = $init where playerid=$playerid");
+            //$mystring .= "UPDATE players set init = $init where playerid=$playerid;\n";
+            $mysqli->query("UPDATE players set init = $init where playerid=$playerid");
         }
         
     }
-    $query = "select playerid, charname, LPAD(init, 2, '0') as init,LPAD(dexmod, 2, '0') as dexmod,LPAD(dex, 2, '0') as dex  from players where present=1";
+    $query = "SELECT  playerid, charname, LPAD(init, 2, '0') as init,LPAD(dexmod, 2, '0') as dexmod,LPAD(dex, 2, '0') as dex  from players where present=1";
     $result = $mysqli->query($query);   
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -146,7 +145,7 @@ elseif ($_POST['function'] == "inits")
         while ($row = $result->fetch_assoc()) {
             $initval = $row["init"];
             $initval="$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"];
-            $query = "insert into round_tracker (`combatantid`, `is_player`,`init`) VALUES ('".$row['playerid']."', '1', '$initval')";
+            $query = "INSERT into round_tracker (`combatantid`, `is_player`,`init`) VALUES ('".$row['playerid']."', '1', '$initval')";
             $resultb = $mysqli->query($query);
 
             if (!$resultb) {
@@ -154,15 +153,14 @@ elseif ($_POST['function'] == "inits")
             }
         }
     }    
-    $query = "truncate turn";
+    $query = "TRUNCATE turn";
     $result = $mysqli->query($query);    
     $mystring='success';
     echo $mystring;     
 }    
 elseif ($_POST['function'] == "monster")
-{       
-    //var_dump($_POST);
-    //$mysqli->query("update players set init = $init where playerid=$playerid");
+{
+    $target_dir = realpath(dirname(__FILE__))."/uploads/";
     $truename=$_POST["truename"];
     $fakename=$_POST["fakename"];
     $initmod=$_POST["initmod"];
@@ -171,21 +169,53 @@ elseif ($_POST['function'] == "monster")
     $ac=$_POST["ac"];
     $showtruename=$_POST["showtruename"] == "on" ? '1' : '0';
     $showac=$_POST["showac"] == "on" ? '1' : '0';
+    $imageFileType = pathinfo(basename($_FILES["file"]["name"]),PATHINFO_EXTENSION);
 
-    $query = "INSERT INTO creatures (`truename`, `fakename`, `showtruename`, `initmod`, `dexmod`, `dexscore`, `ac`, `showac`) VALUES ('$truename', '$fakename', '$showtruename', '$initmod', '$dexmod', '$dexscore', '$ac', '$showac')";
+    $query = "INSERT into creatures (`truename`, `fakename`, `showtruename`, `initmod`, `dexmod`, `dexscore`, `ac`, `showac`) VALUES ('$truename', '$fakename', '$showtruename', '$initmod', '$dexmod', '$dexscore', '$ac', '$showac')";
     $result = $mysqli->query($query);
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
     }
     else
     {
-        echo "success"; 
+        $creatureUID=$mysqli->insert_id;
+        $new_file_name="creature_". $creatureUID.".$imageFileType";
+        $target_file = ($target_dir . $new_file_name);
+        if ($_FILES["file"]){
+            if (move_uploaded_file($_FILES["file"]["tmp_name"], $target_file)) 
+            {
+                $query = "UPDATE creatures set `image`='".$new_file_name."' where creatureid=$creatureUID";
+                $result = $mysqli->query($query);
+                if (!$result)
+                {
+                    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+                }
+                else
+                {
+                    echo "success"; 
+                } 
+            }
+            else
+                echo "File upload failed. See php logs.";
+        }
+        else
+        {
+            $query = "UPDATE creatures set `image`='".$new_file_name."' where creatureid=$creatureUID";
+            $result = $mysqli->query($query);
+            if (!$result)
+            {
+                throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+            }
+            else
+            {
+                echo "success"; 
+            }             
+        }
     }   
 }
 elseif ($_POST['function'] == "editmonster")
 {
-    //var_dump($_POST);
-    //$mysqli->query("update players set init = $init where playerid=$playerid");
+    $target_dir = realpath(dirname(__FILE__))."/uploads/";
     $truename=$_POST["truename"];
     $fakename=$_POST["fakename"] ? $_POST["fakename"] : 'null';
     $initmod=$_POST["initmod"];
@@ -194,11 +224,17 @@ elseif ($_POST['function'] == "editmonster")
     $ac=$_POST["ac"] ? $_POST["ac"] : 'null';
     $showtruename=$_POST["showtruename"] == "on" ? '1' : '0';
     $showac=$_POST["showac"] == "on" ? '1' : '0';
-    
     $creatureid=$_POST["creatureid"];
-    
-    $query = "update creatures set `truename`='$truename', `fakename`='$fakename', `showtruename`='$showtruename', `initmod`='$initmod', `dexmod`='$dexmod', `dexscore`='$dexscore', `ac`='$ac', `showac`='$showac' where `creatureid`='$creatureid'";
-    //echo $query;
+    $new_file_name=null;
+    if (isset($_FILES["file"]))
+    {
+        $imageFileType = pathinfo(basename($_FILES["file"]["name"]),PATHINFO_EXTENSION);
+        $new_file_name="creature_". $creatureid.".$imageFileType";
+        $target_file = ($target_dir . $new_file_name); 
+        move_uploaded_file($_FILES["file"]["tmp_name"], $target_file);
+    }
+    $query = "UPDATE creatures set `truename`='$truename', `fakename`='$fakename', `showtruename`='$showtruename', `initmod`='$initmod', `dexmod`='$dexmod', `dexscore`='$dexscore', `ac`='$ac', `showac`='$showac', `image`=".($new_file_name ? "'$new_file_name'" : "null")." where `creatureid`='$creatureid'";
+    error_log( $query);
     $result = $mysqli->query($query);
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -212,7 +248,7 @@ elseif ($_POST['function'] == "encounter")
 {
     $encountername = $_POST['combats_name'];
     $creature_list=trim($_POST['creaturelist'],",");
-    $query = "INSERT INTO combats_name (`combats_name`) VALUES ('$encountername')";
+    $query = "INSERT into combats_name (`combats_name`) VALUES ('$encountername')";
     $result = $mysqli->query($query);
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -222,7 +258,7 @@ elseif ($_POST['function'] == "encounter")
         $combatid=$mysqli->insert_id;
         foreach (explode(",",$creature_list) as $creatureid)  
         {
-            $query = "INSERT INTO combats (`combatid`, `creatureid`) VALUES ('$combatid', '$creatureid')"; 
+            $query = "INSERT into combats (`combatid`, `creatureid`) VALUES ('$combatid', '$creatureid')"; 
             $result = $mysqli->query($query);
             if (!$result) {
                 throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -236,7 +272,7 @@ elseif ($_POST['function'] == "editencounter")
     $encountername = $_POST['combats_name'];
     $creature_list=trim($_POST['creaturelist'],",");
     $encounterid=$_POST['combatid'];
-    $query = "update combats_name set combats_name='$encountername' where combatid=$encounterid";
+    $query = "UPDATE combats_name set combats_name='$encountername' where combatid=$encounterid";
     $result = $mysqli->query($query);
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -252,7 +288,7 @@ elseif ($_POST['function'] == "editencounter")
         {
             foreach (explode(",",$creature_list) as $creatureid)  
             {
-                $query = "INSERT INTO combats (`combatid`, `creatureid`) VALUES ('$encounterid', '$creatureid')"; 
+                $query = "INSERT into combats (`combatid`, `creatureid`) VALUES ('$encounterid', '$creatureid')"; 
                 error_log( $query);
                 $result = $mysqli->query($query);
                 if (!$result) {
@@ -268,7 +304,7 @@ elseif ($_POST['function'] == "createandloadcombat")
     $encounterid=$_POST['encounterid'];
     $query = "truncate round_tracker";
     $result = $mysqli->query($query);
-    $query = "select combats.creatureid, creatures.showtruename, LPAD(creatures.initmod, 2, '0') as initmod,LPAD(creatures.dexmod, 2, '0') as dexmod,LPAD(creatures.dexscore, 2, '0') as dexscore,creatures.showac from combats left join creatures on creatures.creatureid=combats.creatureid where combatid=$encounterid";
+    $query = "SELECT  combats.creatureid, creatures.showtruename, LPAD(creatures.initmod, 2, '0') as initmod,LPAD(creatures.dexmod, 2, '0') as dexmod,LPAD(creatures.dexscore, 2, '0') as dexscore,creatures.showac from combats left join creatures on creatures.creatureid=combats.creatureid where combatid=$encounterid";
     $result = $mysqli->query($query);
 
     if (!$result) {
@@ -280,7 +316,7 @@ elseif ($_POST['function'] == "createandloadcombat")
             $d20roll = crypto_rand_secure ( 1,20 );
             $initval = ($d20roll + $row["initmod"]);
             $initval="$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"];
-            $query = "insert into round_tracker (`combatantid`, `init`,`reveal_name`,`reveal_ac`) VALUES ('".$row['creatureid']."', '$initval','".$row["showtruename"]."','".$row["showac"]."')";
+            $query = "INSERT into round_tracker (`combatantid`, `init`,`reveal_name`,`reveal_ac`) VALUES ('".$row['creatureid']."', '$initval','".$row["showtruename"]."','".$row["showac"]."')";
             $resultb = $mysqli->query($query);
 
             if (!$resultb) {
@@ -289,31 +325,6 @@ elseif ($_POST['function'] == "createandloadcombat")
         }
     }
     echo "success";
-    //add players
-    /*
-    $query = "select playerid, charname, LPAD(init, 2, '0') as init,LPAD(dexmod, 2, '0') as dexmod,LPAD(dex, 2, '0') as dex  from players where present=1";
-    $result = $mysqli->query($query);   
-    if (!$result) {
-        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
-    }
-    else
-    {   
-        while ($row = $result->fetch_assoc()) {
-            $initval = $row["init"];
-            echo "first init: $initval";
-            $initval="$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"];
-            echo "last init: $initval";
-            $query = "insert into round_tracker (`combatantid`, `is_player`,`init`) VALUES ('".$row['playerid']."', '1', '$initval')";
-            var_dump($row);
-            echo $query;
-            $resultb = $mysqli->query($query);
-
-            if (!$resultb) {
-                throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
-            }
-        }
-    }
-    */
 }
 elseif ($_POST['function'] == "startencounter")
 {
@@ -323,7 +334,7 @@ elseif ($_POST['function'] == "startencounter")
     $uid=$_POST['nextcreatureuid'];
 
     // find out/set/increment round number
-    $result = $mysqli->query("SELECT * from turn"); 
+    $result = $mysqli->query("SELECT  * from turn"); 
     $row = $result->fetch_assoc();
     $round_number=$row['round_number'];
     if (!$round_number) //not yet set, so make it round 1
@@ -331,7 +342,7 @@ elseif ($_POST['function'] == "startencounter")
     $current_combatantid=$row['uid'];
 
     //find the last combatant in the turn
-    $query = "SELECT * from round_tracker order by init asc, uid desc limit 1";
+    $query = "SELECT  * from round_tracker order by init asc, uid desc limit 1";
     $result = $mysqli->query($query); 
     $row = $result->fetch_assoc();
     if ($current_combatantid == $row['uid'])
@@ -345,7 +356,7 @@ elseif ($_POST['function'] == "startencounter")
     }
     $query = "truncate turn";
     $result = $mysqli->query($query);    
-    $query = "INSERT INTO turn (`uid`,`round_number`, `creatureid`, `is_player`) VALUES ('$uid','$round_number', '$nextcreature','$is_player')"; 
+    $query = "INSERT into turn (`uid`,`round_number`, `creatureid`, `is_player`) VALUES ('$uid','$round_number', '$nextcreature','$is_player')"; 
     $result = $mysqli->query($query);  
 
     echo "success";
@@ -370,6 +381,34 @@ elseif ($_POST['function'] == "changecreatureval")
     }
     $query="UPDATE round_tracker set $action = $value where uid = $uid";
     $result = $mysqli->query($query);  
+}
+elseif ($_POST['function'] == "removeimage")
+{
+    $uid=$_POST['uid'];
+    $query = "select image from creatures where creatureid=$uid";
+    $result = $mysqli->query($query);
+    $row = $result->fetch_assoc();
+    if (!$result)
+    {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {
+        $filename=$row['image'];
+        $query = "UPDATE creatures set `image`=null where creatureid=$uid";
+        $result = $mysqli->query($query);
+        if (!$result)
+        {
+            throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+        }
+        else
+        {
+            $target_dir = realpath(dirname(__FILE__))."/uploads/";
+            $target_file = ($target_dir . $filename);
+            unlink($target_file);
+            echo "success"; 
+        } 
+    }
 
 }else{
     //Do nothing

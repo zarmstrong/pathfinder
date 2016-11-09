@@ -168,7 +168,7 @@ function add_monster_form()
 
     echo '</div></div>';
     echo '<div class="col-lg-4" id="newcreature">';
-	
+
 	//monster form
     create_new_monster_form();
 
@@ -190,9 +190,9 @@ function create_monster_list()
 	    return;
 	}	
     while ($row = $result->fetch_assoc()) {
-		echo '<a data-creatureid="'.$row["creatureid"].'" class="list-group-item selectableCard" >'.$row["truename"].'      <span class="pull-right">
-        <button class="btn btn-xs btn-warning" value="delete" data-toggle="modal"  data-objecttype="creature" data-record-id="'.$row["creatureid"].'" data-record-title="'.$row["truename"].'" data-target="#confirm-delete">
-          <span class="glyphicon glyphicon-trash"></span>
+		echo '<a data-creatureid="'.$row["creatureid"].'" class="list-group-item selectableCard " >'.$row["truename"].' ('.$row["fakename"].')      <span class="pull-right">
+        <button class="btn btn-xs btn-warning " value="delete" data-toggle="modal"  data-objecttype="creature" data-record-id="'.$row["creatureid"].'" data-record-title="'.$row["truename"].'" data-target="#confirm-delete">
+          <i class="glyphicon glyphicon-trash"></i>
         </button></a>';
     }	
 ?>
@@ -218,7 +218,7 @@ function create_monster_list()
 function create_new_monster_form()
 {
 	//monster form
-	echo '<form id="monstersform" class="form-horizontal">';
+	echo '<form id="monstersform" enctype="multipart/form-data" class="form-horizontal">';
 	echo '
 		  <div class="form-group">
 		    <label for="truename" class="col-sm-6 control-label">Creature\'s True Name</label>
@@ -239,15 +239,15 @@ function create_new_monster_form()
 		    </div>
 		  </div>	
 		  <div class="form-group">
-		    <label for="dexmod" class="col-sm-6 control-label">Dexterity Modifier</label>
-		    <div class="col-sm-6">
-		      <input type="text" class="form-control" name="dexmod" id="dexmod" placeholder="0">
-		    </div>
-		  </div>	
-		  <div class="form-group">
 		    <label for="dexscore" class="col-sm-6 control-label">Dexterity Score</label>
 		    <div class="col-sm-6">
 		      <input type="text" class="form-control" name="dexscore" id="dexscore" placeholder="0">
+		    </div>
+		  </div>	
+		  <div class="form-group">
+		    <label for="dexmod" class="col-sm-6 control-label">Dexterity Modifier</label>
+		    <div class="col-sm-6">
+		      <input type="text" class="form-control" name="dexmod" id="dexmod" placeholder="0" readonly>
 		    </div>
 		  </div>	
 		  <div class="form-group">
@@ -255,7 +255,18 @@ function create_new_monster_form()
 		    <div class="col-sm-6">
 		      <input type="text" class="form-control" name="ac" id="ac" placeholder="0">
 		    </div>
-		  </div>	
+		  </div>
+		  <div class="form-group">
+		  	<span class="col-sm-6"/>
+		    <div class="input-group col-sm-6">	
+                <label class="input-group-btn">
+                    <span class="btn btn-primary">
+                        Browse&hellip; <input id="monsterimage" type="file" style="display: none;" >
+                    </span>
+                </label>
+                <input type="text" class="form-control" readonly>
+		    </div>
+		  </div>				  
 		  <div class="form-group">
 		    <div class="col-sm-offset-6 col-sm-10">
 		      <div class="checkbox">
@@ -282,6 +293,16 @@ function create_new_monster_form()
     echo '</div>';	
 ?>
 	<script type="text/javascript">
+	$("#dexscore").on("input",function(e){
+	 if($(this).data("lastval")!= $(this).val()){
+	     $(this).data("lastval",$(this).val());
+	     //change action
+	     dexscore=$(this).val();
+	     dexmod=Math.floor((dexscore-10)/2)
+	     console.log(dexmod);  
+	     $("#dexmod").val(dexmod);
+	 };
+	});		
 	$("#monstersform").submit(function(event){
 	    // cancels the form submission
 	    event.preventDefault();
@@ -292,11 +313,32 @@ function create_new_monster_form()
 	    getData("monsterlist");
 	}); 
 	function submitMonsterForm(){
+// Loop through each of the selected files.
+		var formData = new FormData($('#monstersform')[0]);
+		formData.append("function","monster");
+		//formData.append($('#monstersform').serialize());
+
+		var file = $('#monsterimage')[0].files[0];
+		// Check the file type.
+		if (file)
+		{
+			if (!file.type.match('image.*'))
+				return;
+			// Add the file to the request.
+			console.log("adding a pic");
+			formData.append('file', $('#monsterimage')[0].files[0]); 
+			console.log(formData);			
+		}
+
+
 	    // Initiate Variables With Form Content
 	    $.ajax({
 	        type: "POST",
 	        url: "ajax.php",
-	        data: "function=monster&" + $('#monstersform').serialize(),
+	        data: formData,
+	        processData: false, // Don't process the files
+	        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+	        cache: false,
 	        success : function(text){
 	            if (text == "success"){
 					showmonsteralert('Saved','alert-success');
@@ -314,6 +356,24 @@ function create_new_monster_form()
 	    	$("#alertdiv").remove();
 	    }, 2000);
 	  }
+	$('#monsterimage').on('change',  function() {
+		var input = $(this),
+		numFiles = input.get(0).files ? input.get(0).files.length : 1,
+		label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+		input.trigger('fileselect', [numFiles, label]);
+	});
+      $('#monsterimage').on('fileselect', function(event, numFiles, label) {
+
+          var input = $(this).parents('.input-group').find(':text'),
+              log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+          if( input.length ) {
+              input.val(log);
+          } else {
+              if( log ) alert(log);
+          }
+
+      });
 	</script>
 <?php        
 }
@@ -332,8 +392,7 @@ function edit_monster_form($creatureid)
 
 	//monster form
 	echo '<form id="editmonstersform" class="form-horizontal">';
-	echo '
-		  <div class="form-group">
+	echo '<div class="form-group">
 		    <label for="truename" class="col-sm-6 control-label">Creature\'s True Name</label>
 		    <div class="col-sm-6">
 		      <input type="text" class="form-control" name="truename" id="truename" value="'.$row['truename'].'">
@@ -352,23 +411,50 @@ function edit_monster_form($creatureid)
 		    </div>
 		  </div>	
 		  <div class="form-group">
-		    <label for="dexmod" class="col-sm-6 control-label">Dexterity Modifier</label>
-		    <div class="col-sm-6">
-		      <input type="text" pattern="[0-9]*" class="form-control" name="dexmod" id="dexmod" value="'.$row['dexmod'].'">
-		    </div>
-		  </div>	
-		  <div class="form-group">
 		    <label for="dexscore" class="col-sm-6 control-label">Dexterity Score</label>
 		    <div class="col-sm-6">
 		      <input type="text" pattern="[0-9]*" class="form-control" name="dexscore" id="dexscore" value="'.$row['dexscore'].'">
 		    </div>
 		  </div>	
 		  <div class="form-group">
+		    <label for="dexmod" class="col-sm-6 control-label">Dexterity Modifier</label>
+		    <div class="col-sm-6">
+		      <input type="text" class="form-control" name="dexmod" id="dexmod" placeholder="0" readonly>
+		    </div>
+		  </div>			  
+		  <div class="form-group">
 		    <label for="ac" class="col-sm-6 control-label">Armor Class</label>
 		    <div class="col-sm-6">
 		      <input type="text" pattern="[0-9]*" class="form-control" name="ac" id="ac" value="'.$row['ac'].'">
 		    </div>
-		  </div>	
+		  </div>';
+
+		  	$image=$row['image'];
+		  	if ($image)
+		  	{
+		  		echo '
+				  <div class="form-group">
+				  	<span class="col-sm-6"/>		  		
+					<div id="creatureimage" class="col-sm-offset-6 col-sm-6"><span class="col-sm-2 hovereffect"><img src="uploads/'.$row['image'].'" class="img-thumbnail" alt="Responsive image">
+						<div class="overlay col-sm-6 text-center">
+		           			<h2>Remove this image?</h2>
+		           			<a class="info" id="removeimage" data-creatureid="'.$creatureid.'"><span class="glyphicon glyphicon-trash text-center"></span></a>
+		        		</div>
+					</div>
+				  </div>';
+		  }		
+		  echo '
+		  <div class="form-group">
+		  	<span class="col-sm-6"/>
+		    <div class="input-group col-sm-6">	
+                <label class="input-group-btn">
+                    <span class="btn btn-primary">
+                        Browse&hellip; <input id="monsterimage" type="file" style="display: none;" >
+                    </span>
+                </label>
+                <input type="text" class="form-control" readonly>
+		    </div>
+		  </div>			  	  		  
 		  <div class="form-group">
 		    <div class="col-sm-offset-6 col-sm-10">
 		      <div class="checkbox">
@@ -388,15 +474,33 @@ function edit_monster_form($creatureid)
 		    </div>
 		  </div>				  		  
 	';
-	echo '<input type="hidden" name="creatureid" value="'.$creatureid.'">';
-	echo '<div class="col-sm-offset-4 col-sm-3"><button type="submit" value="edit" class="btn btn-default">Save Changes</button></form></div>
-	      <div class="col-sm-5"><form id="newmonstersform" class="form-inline"><button type="submit" value="new" class="btn btn-default">Save as New Monster</button></form></div>';
-    echo '</div>';
+	echo '<input type="hidden" id="creatureid" name="creatureid" value="'.$creatureid.'">';
+	echo '<div class="col-sm-offset-5 col-sm-3"><button type="submit" value="edit" class="btn btn-default">Save Changes</button></form></div>
+	      <div class="col-sm-3"><form id="newmonstersform" class="form-inline"><button type="submit" value="new" class="btn btn-default">Save as New Monster</button></form></div>';
 
+	echo '<div class="row">&nbsp;</div><div class="row">&nbsp;</div>
+			<div class="row">
+				<div class="col-sm-offset-5 col-sm-3">
+					<form id="clearmonstersform" class="form-inline">
+						<button type="submit" value="clear" class="btn btn-default" >Clear Form</button>
+					</form>
+				</div>
+			</div>';
     echo '<div class="row">&nbsp;</div><div class="row"><div class="col-sm-offset-6 col-sm-4" id="monsteralertzone"></div></div>';
     echo '</div>';	
 ?>
 	<script type="text/javascript">
+
+	$("#dexscore").on("input",function(e){
+	 if($(this).data("lastval")!= $(this).val()){
+	     $(this).data("lastval",$(this).val());
+	     //change action
+	     dexscore=$(this).val();
+	     dexmod=Math.floor((dexscore-10)/2)
+	     console.log(dexmod);  
+	     $("#dexmod").val(dexmod);
+	 };
+	});	
 	$("#editmonstersform").submit(function(event){
 	    // cancels the form submission
 	    event.preventDefault();
@@ -415,16 +519,33 @@ function edit_monster_form($creatureid)
 	    getData("monsterlist");		
 
 	});	
-
 	function submitEditMonsterForm(){
+		var formData = new FormData($('#editmonstersform')[0]);
+		formData.append("function","editmonster");
+
+		var file = $('#monsterimage')[0].files[0];
+		// Check the file type.
+		if (file)
+		{
+			if (!file.type.match('image.*'))
+				return;
+			// Add the file to the request.
+			formData.append('file', $('#monsterimage')[0].files[0]); 
+		}
+
 	    // Initiate Variables With Form Content
 	    $.ajax({
 	        type: "POST",
 	        url: "ajax.php",
-	        data: "function=editmonster&" + $('#editmonstersform').serialize(),
+	        data: formData,
+	        processData: false, // Don't process the files
+	        contentType: false, // Set content type to false as jQuery will tell the server its a query string request
+	        cache: false,	        
 	        success : function(text){
 	            if (text == "success"){
 					showmonsteralert('Saved','alert-success');
+					getData("newcreature","edit",$("#creatureid").val());
+
 	            }
 	            else 
 	            {
@@ -456,6 +577,43 @@ function edit_monster_form($creatureid)
 	    	$("#alertdiv").remove();
 	    }, 2000);
 	  }
+	$("#removeimage").click(function(event){
+	    var data = $(this).data();
+		console.log(data.creatureid);
+
+	    $.ajax({
+	        type: "POST",
+	        url: "ajax.php",
+	        data: "function=removeimage&uid=" + data.creatureid,
+	        success : function(text){
+	            if (text == "success"){
+					$("#creatureimage").fadeOut(500,function() { $("#creatureimage").remove(); });
+	            }
+	            else 
+	            {
+	              console.log(text);
+	            }
+	        }
+	    });		
+	});
+	$('#monsterimage').on('change',  function() {
+		var input = $(this),
+		numFiles = input.get(0).files ? input.get(0).files.length : 1,
+		label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+		input.trigger('fileselect', [numFiles, label]);
+	});
+      $('#monsterimage').on('fileselect', function(event, numFiles, label) {
+
+          var input = $(this).parents('.input-group').find(':text'),
+              log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+          if( input.length ) {
+              input.val(log);
+          } else {
+              if( log ) alert(log);
+          }
+
+      });	
 	</script>
 <?php        
 }
@@ -493,16 +651,14 @@ function create_encounter_list()
 	}	
     while ($row = $result->fetch_assoc()) {
 		echo '<a  data-combatid="'.$row["combatid"].'" class="list-group-item selectableCard" >'.$row["combats_name"].'      <span class="pull-right">
-        <button class="btn btn-xs btn-warning" value="delete" data-toggle="modal" data-objecttype="encounter" data-record-id="'.$row["combatid"].'" data-record-title="'.$row["combats_name"].'" data-target="#confirm-delete">
-          <span class="glyphicon glyphicon-trash"></span>
-        </button></a>';
+	        	<button class="btn btn-xs btn-warning" value="delete" data-toggle="modal" data-objecttype="encounter" data-record-id="'.$row["combatid"].'" data-record-title="'.$row["combats_name"].'" data-target="#confirm-delete">
+	          		<span class="glyphicon glyphicon-trash"></span>
+	        	</button>
+	          </a>';
     }	
 
 ?>
 	<script type="text/javascript">
-	$(document).ready(function() {
-	 	 $('#confirm-delete').modal(options) 
-	});	
 	function loadEncounterEditor(combatid){
 		if ($(document.activeElement).val() == "delete")
 		{
@@ -1026,11 +1182,11 @@ function show_round_tracker()
 				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).$acwords.'</span>';
 		if (!$is_player)
 		{
-		echo '  <span class="pull-right">
+		echo '  <p class="list-group-item-text">
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_1" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="reveal_ac"'.($reveal_ac ? " checked" : "").'>Reveal AC</label>
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_2" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="reveal_name"'.($reveal_name ? " checked" : "").'>Reveal Name</label>
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_3" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_in_tracker"'.($show_in_tracker ? " checked" : "").'>Show in Tracker</label>
-				</span>';
+				</p>';
 		}
 		echo '  </li>';
 				$count++;

@@ -49,7 +49,7 @@ function create_newsession_form()
 	    echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2">';
         echo '<button type="submit" class="btn btn-default">Save Attendance</button></form></div></div>';
         echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2" id="attenalertzone"></div></div>';
-        echo '</div>';
+        //echo '</div>';
 ?>
 	<script type="text/javascript">
 
@@ -190,8 +190,8 @@ function create_monster_list()
 	    return;
 	}	
     while ($row = $result->fetch_assoc()) {
-		echo '<a data-creatureid="'.$row["creatureid"].'" class="list-group-item selectableCard " >'.$row["truename"].' ('.$row["fakename"].')      <span class="pull-right">
-        <button class="btn btn-xs btn-warning " value="delete" data-toggle="modal"  data-objecttype="creature" data-record-id="'.$row["creatureid"].'" data-record-title="'.$row["truename"].'" data-target="#confirm-delete">
+		echo '<a data-creatureid="'.$row["creatureid"].'" class="list-group-item selectableCardM" >'.$row["truename"].' ('.$row["fakename"].')      <span class="pull-right">
+        <button class="btn btn-xs btn-warning " value="delete" data-toggle="modal" data-function="deletecreature"  data-objecttype="creature" data-record-id="'.$row["creatureid"].'" data-record-title="'.$row["truename"].'" data-target="#confirm-delete" id="monster_'.$row["creatureid"].'">
           <i class="glyphicon glyphicon-trash"></i>
         </button></a>';
     }	
@@ -205,12 +205,12 @@ function create_monster_list()
 		else
 			getData("newcreature","edit",creatureid)
 	}
+  $('.selectableCardM').on('click touchstart',function(){
+    var data = $(this).data();
+    console.log("Boom!" + data.creatureid);
+    loadMonsterEditor(data.creatureid);
+  });
 
-	$('.selectableCard').on('click touchstart',function(){
-		var data = $(this).data();
-		console.log(data.creatureid);
-		loadMonsterEditor(data.creatureid);
-	});
 	</script>
 <?php
 }
@@ -650,11 +650,12 @@ function create_encounter_list()
 	    return;
 	}	
     while ($row = $result->fetch_assoc()) {
-		echo '<a  data-combatid="'.$row["combatid"].'" class="list-group-item selectableCard" >'.$row["combats_name"].'      <span class="pull-right">
-	        	<button class="btn btn-xs btn-warning" value="delete" data-toggle="modal" data-objecttype="encounter" data-record-id="'.$row["combatid"].'" data-record-title="'.$row["combats_name"].'" data-target="#confirm-delete">
-	          		<span class="glyphicon glyphicon-trash"></span>
-	        	</button>
-	          </a>';
+		echo '<a id="ae_'.$row["combatid"].'" data-combatid="'.$row["combatid"].'" class="list-group-item selectableCard" >'.$row["combats_name"].'      <span class="pull-right">';
+	    echo '<button class="btn btn-xs btn-warning delbut" value="delete" data-function="deleteencounter" 
+	    		data-objecttype="encounter" data-record-id="'.$row["combatid"].'" data-record-title="'.$row["combats_name"].'" 
+	    		data-target="#deleteencountermodal" id="encounter_'.$row["combatid"].'" onclick="$(\'#deleteencountermodal\').modal(\'show\');">
+	          	<span class="glyphicon glyphicon-trash"></span>
+	          </button></a>';
     }	
 
 ?>
@@ -667,13 +668,37 @@ function create_encounter_list()
 		else
 			getData("newencounter","edit",combatid)
 	}
+  $('.selectableCard').on('click touchstart',function(){
+    var data = $(this).data();
+    console.log(data.combatid);
+    loadEncounterEditor(data.combatid);
+  });	
+  $('.delbut').on('click touchstart',function(e){
+    console.log("nips!" + $(this).data('recordId') + " -- " + $(this).data('function') );
+    e.preventDefault();
+     $('#deleteencountermodal-title').html($(this).data('recordTitle'));
+     $('#deleteencountermodal').data("function",$(this).data('function'))
+     $('#deleteencountermodal').data('recordId',$(this).data('recordId'))
+     $('#deleteencountermodal').modal({
+     	show: true,
+     	backdrop: 'static',
+     	keyboard: true});
+  });	  
 
-	$('.selectableCard').on('click touchstart',function(){
-		var data = $(this).data();
-		console.log(data.combatid);
-		loadEncounterEditor(data.combatid);
-	});
-
+  $('#deleteencountermodal').on('click', '.btn-ok', function(e) {
+    var $modalDiv = $(e.delegateTarget);
+    var id = $('#deleteencountermodal').data('recordId');
+    var func = $('#deleteencountermodal').data('function');
+    $modalDiv.addClass('loading');
+    $.post('ajax.php?function='+func+'&combatid=' + id, function(data)
+    {       
+    }).then(function() {
+	    $('#deleteencountermodal').data('recordId','');
+	    $('#deleteencountermodal').data('function','');
+	    $modalDiv.modal('hide').removeClass('loading');
+      getData("encounterlist");
+    })
+  });  
 	</script>
 <?php
 
@@ -757,6 +782,7 @@ function create_new_encounter_form()
 	        success : function(text){
 	            if (text == "success"){
 					showencounteralert('Saved','alert-success');
+					getData("encounterlist");
 	            }
 	            else 
 	            {
@@ -945,7 +971,6 @@ function edit_encounter_form($encounterid)
 
 	    $('#encountersform').serialize();
 	    console.log($('#encountersform').serialize());
-	    return;
 	    submitNewEncounterForm(array_of_creatures);
 	    getData("newencounter");
 	    getData("encounterlist");

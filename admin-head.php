@@ -27,3 +27,6 @@ require_once('inc/dbconn.php') ;
 
 ?>
 
+  <script type="text/javascript">
+
+  </script>

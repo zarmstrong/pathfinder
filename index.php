@@ -32,7 +32,7 @@
     <div class="row">
       <div class="col-md-4" id="leftcolumn"><?php show_turn_data(); ?></div>
       <div class="col-md-4" id="middlecolumn"><?php show_round_info(); ?></div>
-      <div class="col-md-4" id="rightcolumn">.col-md-4</div>
+      <div class="col-md-4" id="rightcolumn"></div>
     </div>
 
 
@@ -173,7 +173,7 @@ setInterval(function() {
 }, 1000);
 setInterval(function() {
   getData("middlecolumn");
-}, 5000);
+}, 2500);
 </script>
   </body>
 </html>

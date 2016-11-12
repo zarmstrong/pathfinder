@@ -40,7 +40,7 @@ function create_newsession_form()
 			      <span class="input-group-addon">
 			        <input type="checkbox" aria-label="'.$row["playerid"].'" id="players[]" name="players[]"  value="'.$row["playerid"].'" ' . ($row["present"]==1 ? 'checked="checked"' : '') . '>
 			      </span>
-			      <input type="text" class="form-control" aria-label="'.$row["name"].'" name="playername" value="'.$row['name'].'" >
+			      <input type="text" class="form-control" aria-label="'.$row["name"].'" name="playername" value="'.$row['name'].'" readonly>
 			    </div><!-- /input-group -->
 			  </div><!-- /.col-lg-6 -->
 			</div>
@@ -1169,10 +1169,11 @@ function show_encounter_picker()
 function show_round_tracker()
 {
 	global $mysqli;
-	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker 
+	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc 
 								from round_tracker as rt 
 								left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 								left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
+								left join tokenmarkers as tm on tm.tid = rt.tokenmarker and rt.is_player != 1 
 								order by init desc, rt.uid asc");
 	if (!$result) {
 	    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -1193,24 +1194,30 @@ function show_round_tracker()
     	$reveal_name=$row["reveal_name"];
     	$turn_start=$row["turn_start"];
     	$reveal_ac=$row["reveal_ac"];
+    	$killed=$row["killed"];
     	$show_in_tracker=$row["show_in_tracker"];
+    	$tokenmarker = $row["marker_desc"];
+    	$tokeninfo=null;
     	if (!$is_player)
     	{
     		$resultb = $mysqli->query("SELECT * from creatures where creatureid=$combatantid");
     		$rowb = $resultb->fetch_assoc();
     		$creatureAC=$rowb['ac'];
     		$acwords=" <strong>AC:</strong> $creatureAC";
+    		if ($tokenmarker)
+    			$tokeninfo=" [$tokenmarker] ";
     	}
 		echo '<li class="list-group-item" data-count="'.$count.'" data-recordid="'.$combatantid.'" data-uid="'.$uid.'"  data-isplayer="'.($is_player ? $is_player : "0").'">
 				<span id="combatantid['.$combatantid.']" data-isplayer="'.($is_player ? $is_player : "0").'" data-recordid="'.$uid.'">
 				Init: '.$init.' -- '. ($is_player ? $creaturename : 
-				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).$acwords.'</span>';
+				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).(isset($tokeninfo) ? $tokeninfo : "").$acwords.'</span>';
 		if (!$is_player)
 		{
 		echo '  <p class="list-group-item-text">
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_1" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="reveal_ac"'.($reveal_ac ? " checked" : "").'>Reveal AC</label>
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_2" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="reveal_name"'.($reveal_name ? " checked" : "").'>Reveal Name</label>
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_3" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_in_tracker"'.($show_in_tracker ? " checked" : "").'>Show in Tracker</label>
+					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_4" id="checkbox_'.$row["uid"].'_4" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="killed"'.($killed ? " checked" : "").'>Killed</label>
 				</p>';
 		}
 		echo '  </li>';
@@ -1390,27 +1397,41 @@ function encounter_controls()
 	    var getnextitem=false;
 	    var setnextitem=false;
 	    var round_number=0;
+	    var activeid;
 	    var this_master = $("#combat_tracker_list");
 	   	this_master.find('li').each( function () {
 	        var listitem = $(this);
+	        //console.log(listitem);
 	        if ($(listitem).hasClass('active'))
 	        {	
 	        	getnextitem=true;
 	        	$(listitem).removeClass("active");
-
 	        }
 	        else if (getnextitem==true)
 	        {
-	        	nextcreature=listitem.data('recordid');
-	        	nextcreatureisplayer=listitem.data('isplayer');
-		        nextcreatureuid=listitem.data('uid');
-	        	$(listitem).addClass("active");
-	        	getnextitem=false;
-	        	setnextitem=true;
+	        	activeid=$(listitem).data("uid");
+	        	console.log("for activeid #"+activeid);
+	        	//console.log($("input#checkbox_"+activeid+"_4").is(':checked'))
+	        	if ($("input#checkbox_"+activeid+"_4").is(':checked') == false )
+	        	{
+	        		console.log("not checked");
+		        	nextcreature=$(listitem).data('recordid');
+		        	nextcreatureisplayer=$(listitem).data('isplayer');
+			        nextcreatureuid=$(listitem).data('uid');
+		        	$(listitem).addClass("active");
+		        	getnextitem=false;
+		        	setnextitem=true;
+		        	console.log(nextcreature + " " + nextcreatureisplayer + " " +nextcreatureuid + " " +getnextitem  + " " + setnextitem)
+		        }
+	        	else
+		    		console.log("checked");
 	        }
+	        if (setnextitem)
+	        	return;
 		}); 
 		if (setnextitem==false)
 		{
+			console.log("didnt find next. starting at the top");
 		   	this_master.find('li').each( function () {
 		        var listitem = $(this);
 		        if (listitem.data('count') == 1)
@@ -1426,6 +1447,7 @@ function encounter_controls()
 		        }
 			}); 
 		}
+		console.log ("do the post with the data: function=startencounter&nextcreature="+nextcreature+"&nextcreatureuid="+nextcreatureuid+"&is_player="+nextcreatureisplayer+"&roundnum="+round_number);
 	    $.ajax({
 	        type: "POST",
 	        url: "ajax.php",
@@ -1448,6 +1470,129 @@ function encounter_controls()
 <?php   
     }	
 }
+
+function create_creature_markers()
+{
+	echo '<div class="row"><div class="col-sm-offset-1 col-lg-4">
+	<label>
+	Creature Marker List (click to edit)</label>
+	<div class="list-group" id="markerlist">';
+	list_markers();
+
+    echo '</div></div>';
+    echo '<div class="col-lg-4" id="newmarker">';
+	
+	//encounter form
+    create_new_marker_form();
+
+    echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2"></div><div class="col-lg-2" id="encounteralertzone"></div></div>';
+    echo '</div>';
+}
+
+function list_markers()
+{
+	global $mysqli;
+	$result = $mysqli->query("SELECT * from tokenmarkers ");
+	if (!$result) {
+	    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+	    return;
+	}	
+    while ($row = $result->fetch_assoc()) {
+		echo '<a data-tokenid="'.$row["tid"].'" class="list-group-item selectableCardT" >'.$row["marker_desc"].'<span class="pull-right">
+        <button class="btn btn-xs btn-warning " value="delete" data-toggle="modal" data-function="deletetoken"  data-title="'.$row["marker_desc"].'" data-objecttype="token" data-record-id="'.$row["tokenid"].'" data-target="#confirm-delete" id="tid_'.$row["tokenid"].'">
+          <i class="glyphicon glyphicon-trash"></i>
+        </button></a>';
+    }	
+?>
+	<script type="text/javascript">
+	function loadTokenEditor(tokenid){
+		if ($(document.activeElement).val() == "delete")
+		{
+			//delete was triggered elsewhere
+		}
+		else
+			getData("newtoken","edit",tokenid)
+	}
+  $('.selectableCardT').on('click touchstart',function(){
+    var data = $(this).data();
+    loadTokenEditor(data.tokenid);
+  });
+
+	</script>
+<?php
+}
+
+function create_new_marker_form()
+{
+	echo '<form id="newtokenform" class="form-horizontal">';		
+	echo '
+	<div class="row">
+	  <div class="col-lg-6">
+	    <div class="input-group">
+	      <input type="text" class="form-control" aria-label="marker_desc" name="marker_desc" value="" >
+	    </div><!-- /input-group -->
+	  </div><!-- /.col-lg-6 -->
+	</div>
+	'  ;
+    echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2">';
+    echo '<button type="submit" class="btn btn-default">Create Token</button></form></div></div>';
+    echo '<div class="row">&nbsp;</div><div class="row"><div class="col-lg-2" id="tokenalertzone"></div></div>';
+?>
+	<script type="text/javascript">
+
+	$("#newtokenform").submit(function(event){
+	    // cancels the form submission
+	    event.preventDefault();
+	    submitTokenForm();
+	}); 
+	function submitTokenForm(){
+	    // Initiate Variables With Form Content
+	$('#newtokenform').serialize();
+	 
+	    $.ajax({
+	        type: "POST",
+	        url: "ajax.php",
+	        data: "function=createtoken&" + $('#newtokenform').serialize(),
+	        success : function(text){
+	            if (text == "success"){
+					showtokenalert('Saved','alert-success');
+	            }
+	            else 
+	            {
+	            	showtokenalert(text,'alert-warning',6000);
+	            }
+	        }
+	    });
+	    getData("markerlist");
+	    getData("newmarker");	    
+	}
+	  function showtokenalert(message,alerttype,fadedelay=2000) {
+	    $('#tokenalertzone').append('<div id="alertdiv" class="alert .out ' +  alerttype + '"><a class="close" data-dismiss="alert">×</a><span>'+message+'</span></div>')
+	    setTimeout(function() { // this will automatically close the alert and remove this if the users doesnt close it in 5 secs
+	    	$("#alertdiv").remove();
+	    }, fadedelay);
+	  }
+	</script>
+<?php        
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 function crypto_rand_secure($min, $max) {
         $range = $max - $min;
         if ($range == 0) return $min; // not so random...
@@ -1461,6 +1606,4 @@ function crypto_rand_secure($min, $max) {
         } while ($rnd >= $range);
         return $min + $rnd;
 }
-
-
 ?>

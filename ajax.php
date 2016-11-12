@@ -110,6 +110,18 @@ elseif ($_GET['function']=='encounter_controls')
 {
     encounter_controls();
 }
+elseif ($_GET['function']=='creaturemarkers')
+{
+    create_creature_markers();
+}
+elseif ($_GET['function']=='newmarker')
+{
+    create_new_marker_form();
+}
+elseif ($_GET['function']=='markerlist')
+{
+    list_markers();
+}
 elseif ($_POST['function'] == "attendance")
 {
     $attending_players = $_POST['players'];
@@ -153,8 +165,6 @@ elseif ($_POST['function'] == "inits")
             }
         }
     }    
-    $query = "TRUNCATE turn";
-    $result = $mysqli->query($query);    
     $mystring='success';
     echo $mystring;     
 }    
@@ -301,6 +311,8 @@ elseif ($_POST['function'] == "editencounter")
 }
 elseif ($_POST['function'] == "createandloadcombat")
 {
+    $query = "TRUNCATE turn";
+    $result = $mysqli->query($query);       
     $encounterid=$_POST['encounterid'];
     $query = "truncate round_tracker";
     $result = $mysqli->query($query);
@@ -321,6 +333,35 @@ elseif ($_POST['function'] == "createandloadcombat")
 
             if (!$resultb) {
                 throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+            }
+        }
+    }
+    //populate an array of all the tokenmarkers
+    $query = "SELECT GROUP_CONCAT(tid) as TIDs FROM tokenmarkers";
+    $resultMarkers = $mysqli->query($query);
+    $resultMarkersRow = $resultMarkers->fetch_assoc();
+    $resultMarkersTIDs=array_reverse(explode(",",$resultMarkersRow['TIDs']));
+
+    $query = "SELECT GROUP_CONCAT(uid) as UIDs, combatantid, COUNT(*) c FROM round_tracker GROUP BY combatantid HAVING c > 1";
+    $result = $mysqli->query($query);
+    if (!$result) {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {   
+ 
+        while ($row = $result->fetch_assoc()) 
+        {
+            $rownum=1;            
+            foreach (explode(",",$row['UIDs']) as $uid)
+            {
+                if ($rownum>1)
+                {
+                    $thistid=array_pop($resultMarkersTIDs);
+                    $updatequery = "UPDATE round_tracker set tokenmarker='$thistid' where uid='$uid'";
+                    $updateresult = $mysqli->query($updatequery);
+                }
+                $rownum++;
             }
         }
     }
@@ -347,6 +388,41 @@ elseif ($_POST['function'] == "startencounter")
     $row = $result->fetch_assoc();
     if ($current_combatantid == $row['uid'])
         $round_number++;
+
+    $query = "select uid,combatantid,is_player,killed from round_tracker order by init asc, uid desc";
+    $result = $mysqli->query($query); 
+    $getnext=0;
+    while ($row = $result->fetch_assoc()) 
+    {
+        if (($row['uid'] == $uid) and ($row['killed']==1))
+        {
+            $getnext=1;
+            echo "getnext";
+        }
+        elseif (($row['uid'] == $uid) and ($row['killed']==0))
+        {
+            echo "not dead, use this guy.";
+            $uid=$row['uid'];
+            $nextcreature=$row['combatantid'];
+            $is_player=$row['is_player'];    
+            break;        
+        }
+        elseif ($getnext)
+        {
+            echo "getting next";
+            if ($row['killed']==0)
+            {
+                echo "not dead - use this one";
+                $getnext=0;
+                $uid=$row['uid'];
+                $nextcreature=$row['combatantid'];
+                $is_player=$row['is_player'];
+            }
+            else
+                echo "dead, trying next";
+        }
+            
+    }
 
     if ($is_player)
     {  
@@ -377,6 +453,9 @@ elseif ($_POST['function'] == "changecreatureval")
         case "reveal_ac":
             $field="";        
         break;
+        case "killed":
+            $field="";        
+        break;        
 
     }
     $query="UPDATE round_tracker set $action = $value where uid = $uid";
@@ -406,6 +485,35 @@ elseif ($_POST['function'] == "removeimage")
             $target_dir = realpath(dirname(__FILE__))."/uploads/";
             $target_file = ($target_dir . $filename);
             unlink($target_file);
+            echo "success"; 
+        } 
+    }
+}
+elseif ($_POST['function'] == "createtoken")
+{
+    $marker_desc=$_POST['marker_desc'];
+    $query = "select count(*) as count from tokenmarkers where marker_desc='$marker_desc'";
+    $result = $mysqli->query($query);
+    if (!$result)
+    {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+    }
+    else
+    {
+        $row = $result->fetch_assoc();
+        if ($row['count']>0)
+        {
+            echo "Already Exists";
+            return;
+        }
+        $query = "INSERT into tokenmarkers (`marker_desc`) VALUES ('$marker_desc')"; 
+        $result = $mysqli->query($query);  
+        if (!$result)
+        {
+            throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+        }
+        else
+        {
             echo "success"; 
         } 
     }

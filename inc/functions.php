@@ -7,7 +7,7 @@ function show_turn_data()
     $result = $mysqli->query("SELECT count(*)  as count from turn"); 
     $row = $result->fetch_assoc();
     if ($row["count"] == "0" )
-   		echo "Combat has not yet begun...";
+   		echo "<h1>Combat has not yet begun...</h1>";
    	else {
 		//get the current thing's turn.
 	    $result = $mysqli->query("SELECT * from turn"); 
@@ -17,10 +17,11 @@ function show_turn_data()
 	        $round_number=1;
 	    $current_combatantid=$row['uid'];
 
-		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker 
+		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc  
 									from round_tracker as rt 
 									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
+									left join tokenmarkers as tm on tm.tid = rt.tokenmarker and rt.is_player != 1 
 									order by init desc, rt.uid asc");
 		if (!$result) {
 		    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -43,6 +44,11 @@ function show_turn_data()
 	    	$reveal_ac=$row["reveal_ac"];
 	    	$show_in_tracker=$row["show_in_tracker"];
 	    	$image=$row["image"];
+	    	$iskilled=$row['killed'];
+	    	$tokenmarker = $row["marker_desc"];
+	    	$tokeninfo=null;	
+    		if ($tokenmarker)
+    			$tokeninfo=" [$tokenmarker] ";								    	    	
 	    	if ($current_combatantid == $uid)
 	    	{
 	    		$current_creature_uid=$uid;
@@ -77,7 +83,7 @@ function show_turn_data()
 					else
 					{
 						//not a player, but show this monster data
-						echo '<h2>Current turn: '.($reveal_name ? "$creaturename" : $fakename ). '</h2>'
+						echo '<h2>Current turn: '.($reveal_name ? "$creaturename" : $fakename ).(isset($tokeninfo) ? $tokeninfo : ""). '</h2>'
 							 .'<span id="nextcreaturename"></span><br/>';
 						if (isset($image))
 							echo '<span class="col-xs-7 "><img src="uploads/'.$image.'" class="img-thumbnail" alt="Responsive image"></span>';
@@ -94,33 +100,37 @@ function show_turn_data()
 	    	}
 	    	elseif (isset($current_creature_uid) and !(isset($next_creature_uid)))
 	    	{
-	    		$next_creature_uid=$uid;
-		    	if ($show_in_tracker)
-		    	{
-		    		if ($is_player == '1')
-		    		{	    
-		    			$words="<h3>On Deck: $creaturename</h3>";
-		    		}
-		    		else
-		    		{
-		    			$words="<h3>On Deck: ".($reveal_name ? "$creaturename" : $fakename ).'</h3>';
-		    		}
-		    	}		
-		    	else
-		    		$words="<h3>On Deck: unknown</h3>";
-		    	?>
-		    	<script type="text/javascript">
-		    		$('#nextcreaturename').html('<?php echo $words; ?>');
-		    	</script>
-		    	<?php
+	    		if (!$iskilled)
+	    		{
+		    		$next_creature_uid=$uid;
+			    	if ($show_in_tracker)
+			    	{
+			    		if ($is_player == '1')
+			    		{	    
+			    			$words="<h3>On Deck: $creaturename</h3>";
+			    		}
+			    		else
+			    		{
+			    			$words="<h3>On Deck: ".($reveal_name ? "$creaturename" : $fakename ).(isset($tokeninfo) ? $tokeninfo : "").'</h3>';
+			    		}
+			    	}		
+			    	else
+			    		$words="<h3>On Deck: unknown</h3>";
+			    	?>
+			    	<script type="text/javascript">
+			    		$('#nextcreaturename').html('<?php echo addslashes($words); ?>');
+			    	</script>
+			    	<?php
+			    }
 	    	}
 	    }	
 	    if (isset($current_creature_uid) and !(isset($next_creature_uid)))
 	    {
-			$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker 
+			$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,tm.marker_desc 
 										from round_tracker as rt 
 										left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 										left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
+										left join tokenmarkers as tm on tm.tid = rt.tokenmarker and rt.is_player != 1 
 										order by init desc, rt.uid asc limit 1");
 			if (!$result) {
 			    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -137,7 +147,10 @@ function show_turn_data()
 	    	$reveal_name=$row["reveal_name"];
 	    	$turn_start=$row["turn_start"];
 	    	$reveal_ac=$row["reveal_ac"];
-	    	$show_in_tracker=$row["show_in_tracker"];				    	
+	    	$show_in_tracker=$row["show_in_tracker"];	
+	    	$tokenmarker = $row["marker_desc"];
+	    	$tokeninfo=null;
+
 	    	if ($show_in_tracker)
 	    	{
 	    		if ($is_player == '1')
@@ -146,14 +159,16 @@ function show_turn_data()
 	    		}
 	    		else
 	    		{
-	    			$words="<h3>On Deck: ".($reveal_name ? "$creaturename" : $fakename ).' (New Round)</h3>';
+		    		if ($tokenmarker)
+		    			$tokeninfo=" [$tokenmarker] ";		    			
+	    			$words="<h3>On Deck: ".($reveal_name ? "$creaturename" : $fakename ).(isset($tokeninfo) ? $tokeninfo : "").'  (New Round)</h3>';
 	    		}
 	    	}		
 	    	else
 	    		$words="<h3>On Deck: Unknown (New Round)</h3>";    		
 	    	?>
 	    	<script type="text/javascript">
-	    		$('#nextcreaturename').html('<?php echo $words; ?>');
+	    		$('#nextcreaturename').html('<?php echo addslashes($words); ?>');
 	    	</script>
 	    	<?php
 	    }
@@ -175,7 +190,7 @@ function show_round_info()
     $result = $mysqli->query("SELECT count(*)  as count from turn"); 
     $row = $result->fetch_assoc();
     if ($row["count"] == "0" )
-   		echo "Combat has not yet begun...";
+   		echo "<h1>Waiting for combat to start.</h1>";
    	else {
 		//get the current thing's turn.
 	    $result = $mysqli->query("SELECT * from turn"); 
@@ -185,10 +200,11 @@ function show_round_info()
 	        $round_number=1;
 	    $current_combatantid=$row['uid'];
 
-		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed
+		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc 
 									from round_tracker as rt 
 									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
+									left join tokenmarkers as tm on tm.tid = rt.tokenmarker and rt.is_player != 1 
 									order by init desc, rt.uid asc");
 		if (!$result) {
 		    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -211,7 +227,8 @@ function show_round_info()
 	    	$reveal_ac=$row["reveal_ac"];
 	    	$show_in_tracker=$row["show_in_tracker"];	
 	    	$killed=$row["killed"];
-
+	    	$tokenmarker = $row["marker_desc"];
+	    	$tokeninfo=null;
 
 	    	if ($show_in_tracker)
 	    	{
@@ -233,8 +250,10 @@ function show_round_info()
 		    		}
 		    		if ($killed)
 		    			$deathwords='<i class="glyphicon-skull"></i>';
+		    		if ($tokenmarker)
+		    			$tokeninfo=" [$tokenmarker] ";		    		
 					//not a player, but show this monster data
-					echo '<li class="list-group-item list-group-item-danger">'.$deathwords.($reveal_name ? "$creaturename" : $fakename ).$acwords. '</li>';
+					echo '<li class="list-group-item list-group-item-danger"><strong>'.($reveal_name ? "$creaturename" : $fakename ).'</strong>'.$deathwords.(isset($tokeninfo) ? $tokeninfo : "").$acwords. '</li>';
 
 				}
 			}
@@ -242,4 +261,5 @@ function show_round_info()
 	    echo '</ul>';
 	}
 }
+
 ?>

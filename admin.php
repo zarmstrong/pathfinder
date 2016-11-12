@@ -100,6 +100,14 @@ include("inc/admin-functions.php");
     <?php  ?>
   </span>
 </div>  
+<div class="content" id="markers" style='display:none;'>
+  <div class="row">
+     <div class="col-md-1"> &nbsp;</div>
+  </div>  
+  <span id="creaturemarkers">
+    <?php  ?>
+  </span>
+</div>  
 
     </div><!-- /.container -->
   </body>

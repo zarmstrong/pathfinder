@@ -15,6 +15,7 @@
             <!-- li><a href="#init" onclick="getData('initform')">Initiative Tracker</a></li -->
             <li><a href="#monsters" onclick="getData('monsterform')">Monster Manager</a></li>
             <li><a href="#combat" onclick="getData('encounterform')">Combat Manager</a></li>
+            <li><a href="#markers" onclick="getData('creaturemarkers')">Creature Markers</a></li>
             <li><a href="#turntracker" onclick="getData('combattracker')">Combat Tracker</a></li>            
           </ul>
         </div><!--/.nav-collapse -->

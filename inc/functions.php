@@ -63,7 +63,7 @@ function show_turn_data()
 						if ($timeleft <1)
 						{
 							$timeleft=0;
-							$timeclass='col-xs-4 alert-danger';
+							$timeclass='col-xs-5 alert-danger';
 							$timewords="<h1>Time's up!</h1>";
 						}
 						elseif ($timeleft <10)

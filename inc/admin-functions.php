@@ -191,7 +191,9 @@ function create_monster_list()
 	}	
     while ($row = $result->fetch_assoc()) {
 		echo '<a data-creatureid="'.$row["creatureid"].'" class="list-group-item selectableCardM" >'.$row["truename"].' ('.$row["fakename"].')      <span class="pull-right">
-        <button class="btn btn-xs btn-warning " value="delete" data-toggle="modal" data-function="deletecreature"  data-objecttype="creature" data-record-id="'.$row["creatureid"].'" data-record-title="'.$row["truename"].'" data-target="#confirm-delete" id="monster_'.$row["creatureid"].'">
+        <button class="btn btn-xs btn-warning delmon" value="delete" data-toggle="modal" data-function="deletecreature"  
+        data-objecttype="creature" data-record-id="'.$row["creatureid"].'" data-record-title="'.$row["truename"].'" 
+        data-target="#confirm-delete" id="monster_'.$row["creatureid"].'">
           <i class="glyphicon glyphicon-trash"></i>
         </button></a>';
     }	
@@ -211,6 +213,16 @@ function create_monster_list()
     loadMonsterEditor(data.creatureid);
   });
 
+ $('.delmon').on('click touchstart',function(e){
+    console.log("naps!" + $(this).data('recordId') + " -- " + $(this).data('function') );
+    e.preventDefault();
+     $('#confirm-delete').data("function",$(this).data('function'))
+     $('#confirm-delete').data('recordId',$(this).data('recordId'))
+     $('#confirm-delete').modal({
+     	show: true,
+     	backdrop: 'static',
+     	keyboard: true});
+  });	  
 	</script>
 <?php
 }
@@ -435,7 +447,8 @@ function edit_monster_form($creatureid)
 		  		echo '
 				  <div class="form-group">
 				  	<span class="col-sm-6"/>		  		
-					<div id="creatureimage" class="col-sm-offset-6 col-sm-6"><span class="col-sm-2 hovereffect"><img src="uploads/'.$row['image'].'" class="img-thumbnail" alt="Responsive image">
+					<div id="creatureimage" class="col-sm-offset-6 col-sm-6"><span class="col-sm-2 hovereffect"><img src="uploads/'.$row['image'].'" class="img-thumbnail" alt="Creature image">
+					<input type="hidden" value="'.$row['image'].'" name="editmonsterimage" id="editmonsterimage">
 						<div class="overlay col-sm-6 text-center">
 		           			<h2>Remove this image?</h2>
 		           			<a class="info" id="removeimage" data-creatureid="'.$creatureid.'"><span class="glyphicon glyphicon-trash text-center"></span></a>

@@ -2,7 +2,7 @@
 require_once('inc/dbconn.php') ;
 require_once('inc/admin-functions.php') ;
 global $mysql;
-error_log($_GET['function']);
+error_log("Function: get: ".$_GET['function']. " post: ". $_POST['function']);
 if ($_GET['function']=='initform')
 {
     add_inits_form();
@@ -38,6 +38,7 @@ elseif ($_GET['function'] == "deletecreature")
 {
     $creatureid=$_GET["creatureid"];
     $query = "DELETE from creatures where `creatureid`='$creatureid'";
+    error_log($query);
     $result = $mysqli->query($query);
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -179,7 +180,11 @@ elseif ($_POST['function'] == "monster")
     $ac=$_POST["ac"];
     $showtruename=$_POST["showtruename"] == "on" ? '1' : '0';
     $showac=$_POST["showac"] == "on" ? '1' : '0';
-    $imageFileType = pathinfo(basename($_FILES["file"]["name"]),PATHINFO_EXTENSION);
+    $editmonsterimage=$_POST["editmonsterimage"];
+    if ($editmonsterimage)
+        $imageFileType = pathinfo(basename($editmonsterimage),PATHINFO_EXTENSION);    
+    else
+        $imageFileType = pathinfo(basename($_FILES["file"]["name"]),PATHINFO_EXTENSION);    
 
     $query = "INSERT into creatures (`truename`, `fakename`, `showtruename`, `initmod`, `dexmod`, `dexscore`, `ac`, `showac`) VALUES ('$truename', '$fakename', '$showtruename', '$initmod', '$dexmod', '$dexscore', '$ac', '$showac')";
     $result = $mysqli->query($query);
@@ -210,6 +215,10 @@ elseif ($_POST['function'] == "monster")
         }
         else
         {
+            if ($editmonsterimage)
+            {
+                copy($target_dir.$editmonsterimage,$target_file);
+            }
             $query = "UPDATE creatures set `image`='".$new_file_name."' where creatureid=$creatureUID";
             $result = $mysqli->query($query);
             if (!$result)

@@ -13,7 +13,7 @@
     <link href="style.css" rel="stylesheet">
   </head>
   <body>
-    <div class="modal fade" id="confirm-delete" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal fade" id="confirm-delete" data-recordId="" data-function="" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-header">
@@ -150,15 +150,16 @@ function getData(id,param1,param2)
     var $modalDiv = $(e.delegateTarget);
     console.log("delegate: " + $modalDiv)
     var id = $(this).data('recordId');
-    var func = $(this).data('function');
+    var func = $("#monster_"+id).data('function');
+    console.log("id: " + id)
+    console.log("func: " + func)
+
     $modalDiv.addClass('loading');
-    $.post('ajax.php?function='+func+'&combatid=' + id, function(data)
+    $.post('ajax.php?function='+func+'&creatureid=' + id, function(data)
     {       
     }).then(function() {
        $modalDiv.modal('hide').removeClass('loading');
-      if (func=="deleteencounter")
         getData("encounterlist");
-      if (func=="deletecreature")
         getData("monsterlist");
     })
   });

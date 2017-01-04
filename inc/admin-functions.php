@@ -247,19 +247,19 @@ function create_new_monster_form()
 		  <div class="form-group">
 		    <label for="initmod" class="col-sm-6 control-label">Initiative Modifier</label>
 		    <div class="col-sm-6">
-		      <input type="text" class="form-control" name="initmod" id="initmod" placeholder="0">
+		      <input type="text" pattern="[-]?[0-9]*"  class="form-control" name="initmod" id="initmod" placeholder="0">
 		    </div>
 		  </div>	
 		  <div class="form-group">
 		    <label for="dexscore" class="col-sm-6 control-label">Dexterity Score</label>
 		    <div class="col-sm-6">
-		      <input type="text" class="form-control" name="dexscore" id="dexscore" placeholder="0">
+		      <input type="text" pattern="[0-9]*" class="form-control" name="dexscore" id="dexscore" placeholder="0">
 		    </div>
 		  </div>	
 		  <div class="form-group">
 		    <label for="dexmod" class="col-sm-6 control-label">Dexterity Modifier</label>
 		    <div class="col-sm-6">
-		      <input type="text" class="form-control" name="dexmod" id="dexmod" placeholder="0" readonly>
+		      <input type="text" pattern="[-]?[0-9]*" class="form-control" name="dexmod" id="dexmod" placeholder="0" readonly>
 		    </div>
 		  </div>	
 		  <div class="form-group">
@@ -419,7 +419,7 @@ function edit_monster_form($creatureid)
 		  <div class="form-group">
 		    <label for="initmod" class="col-sm-6 control-label">Initiative Modifier</label>
 		    <div class="col-sm-6">
-		      <input type="text" pattern="[0-9]*" class="form-control" name="initmod" id="initmod" value="'.$row['initmod'].'">
+		      <input type="text" pattern="[-]?[0-9]*" class="form-control" name="initmod" id="initmod" value="'.$row['initmod'].'">
 		    </div>
 		  </div>	
 		  <div class="form-group">
@@ -431,7 +431,7 @@ function edit_monster_form($creatureid)
 		  <div class="form-group">
 		    <label for="dexmod" class="col-sm-6 control-label">Dexterity Modifier</label>
 		    <div class="col-sm-6">
-		      <input type="text" class="form-control" name="dexmod" id="dexmod" placeholder="0" readonly>
+		      <input type="text" pattern="[-]?[0-9]*" class="form-control" name="dexmod" id="dexmod" placeholder="0" readonly>
 		    </div>
 		  </div>			  
 		  <div class="form-group">

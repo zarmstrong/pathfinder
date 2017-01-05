@@ -1100,8 +1100,7 @@ function create_combat_tracker()
 	echo '<div id="combatzone">';
 	echo '<div class="row"><div class="col-sm-offset-1 col-lg-4">
 	<label>
-	Encounter List</label>
-';
+	Encounter List</label>';
 	show_encounter_picker();
 
     echo '</div>';
@@ -1222,18 +1221,47 @@ function show_round_tracker()
     	}
 		echo '<li class="list-group-item" data-count="'.$count.'" data-recordid="'.$combatantid.'" data-uid="'.$uid.'"  data-isplayer="'.($is_player ? $is_player : "0").'">
 				<span id="combatantid['.$combatantid.']" data-isplayer="'.($is_player ? $is_player : "0").'" data-recordid="'.$uid.'">
-				Init: '.$init.' -- '. ($is_player ? $creaturename : 
-				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).(isset($tokeninfo) ? $tokeninfo : "").$acwords.'</span>';
+				Init: <input type="text" maxlength="12" size="10" style="background-color:#adadad;" id="'.$uid.'-'.$combatantid.'-'.($is_player ? $is_player : "0").'" name="init-'.$combatantid.'" value="'.$init.'" > -- '. ($is_player ? $creaturename : 
+				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).(isset($tokeninfo) ? $tokeninfo : "").$acwords.' </span>';
+		echo '<script type="text/javascript">
+				$("input[name=init-'.$combatantid.']").change(function() {
+					newinit=$(this).val();
+					combatant=$(this).attr("id");
+					//console.log("new init: " + newinit + " combatant id: " + combatant);
+					//$("#startnextturnform").submit();
+				    $.ajax({
+				        type: "POST",
+				        url: "ajax.php",
+				        data: "function=changeinit&combatantinfo="+combatant+"&newinit="+newinit,
+				        success : function(text){
+				            if (text == "success"){
+				            	console.log("I GOT--: " + text);
+								getData("combatzone","showroundtracker");
+				            }
+				            else 
+				            {
+				              console.log("I GOT: " + text);
+				            }
+				        }
+				    });	
+		  
+				});
+			  </script>
+		';
+		echo '  <p class="list-group-item-text">';
 		if (!$is_player)
 		{
-		echo '  <p class="list-group-item-text">
+		echo '
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_1" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="reveal_ac"'.($reveal_ac ? " checked" : "").'>Reveal AC</label>
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_2" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="reveal_name"'.($reveal_name ? " checked" : "").'>Reveal Name</label>
 					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_3" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="show_in_tracker"'.($show_in_tracker ? " checked" : "").'>Show in Tracker</label>
-					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_4" id="checkbox_'.$row["uid"].'_4" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="killed"'.($killed ? " checked" : "").'>Killed</label>
-				</p>';
+					<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_4" id="checkbox_'.$row["uid"].'_4" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="killed"'.($killed ? " checked" : "").'>Killed</label>';
+		
 		}
-		echo '  </li>';
+		echo '		<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_5" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="make_it_my_turn">Change to My Turn</label>';
+
+		echo '  </p>
+		  </li>';
 				$count++;
     }	
     echo '  </ul>
@@ -1252,15 +1280,22 @@ function show_round_tracker()
 		var setVal=0;
 		if (which.checked)
 			setVal=1;
-
+		if (dbaction == "make_it_my_turn")
+			func="changewhoseturn"
+		else
+			func="changecreatureval"
 	    $.ajax({
 	        type: "POST",
 	        url: "ajax.php",
-	        data: "function=changecreatureval&action="+dbaction+"&uid="+uid+"&value="+setVal,
+	        data: "function="+func+"&action="+dbaction+"&uid="+uid+"&value="+setVal,
 	        success : function(text){
 	            if (text == "success"){
 	            	console.log("saved");
 	            }
+	            if (text == "successchangewhoseturn"){
+            		getData("encounter_controls");
+	            	console.log("saved");
+	            }	            
 	            else 
 	            {
 	              console.log(text);
@@ -1386,6 +1421,11 @@ function encounter_controls()
     			<input type="hidden" id="is_player" name="is_player" value="'.$is_player.'">
     			<input type="hidden" id="round_number" name="round_number" value="'.$round_number.'">
     		  </form>';
+    	echo "<br/>";
+    	echo '<form id="changeroundform" class="form-inline">
+    	    	<input type="text" maxlength="3" size="3" id="new_round_number" name="new_round_number" value="'.$round_number.'">
+    	    	<button type="submit" class="btn btn-default" name="changeround">Set Round</button>
+    		  </form>';
 ?>
 	<script type="text/javascript">
     var creatureid = $("#uid").val();
@@ -1402,7 +1442,25 @@ function encounter_controls()
         	$(listitem).removeClass("active");
         }
 	}); 
-
+	$("#changeroundform").submit(function(event){
+	    // cancels the form submission
+	    event.preventDefault();
+	    newroundnum=$("input#new_round_number").val();
+	    $.ajax({
+	        type: "POST",
+	        url: "ajax.php",
+	        data: "function=changeroundnum&newround="+newroundnum,
+	        success : function(text){
+	            if (text == "success"){
+	            	console.log("round changed to " + newroundnum);
+	            }
+	            else 
+	            {
+	              console.log("changeroundform: " +text);
+	            }
+	        }
+	    });		    
+	});
 	$("#startnextturnform").submit(function(event){
 	    // cancels the form submission
 	    event.preventDefault();
@@ -1468,7 +1526,6 @@ function encounter_controls()
 	        success : function(text){
 	            if (text == "success"){
 					getData("encounter_controls");
-
 	            }
 	            else 
 	            {

@@ -148,7 +148,7 @@ elseif ($_POST['function'] == "inits")
         }
         
     }
-    $query = "SELECT  playerid, charname, LPAD(init, 2, '0') as init,LPAD(dexmod, 2, '0') as dexmod,LPAD(dex, 2, '0') as dex  from players where present=1";
+    $query = "SELECT  playerid, charname, init, LPAD(initmod, 2, '0') as initmod,LPAD(dexmod, 2, '0') as dexmod,LPAD(dex, 2, '0') as dex  from players where present=1";
     $result = $mysqli->query($query);   
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -157,8 +157,10 @@ elseif ($_POST['function'] == "inits")
     {   
         while ($row = $result->fetch_assoc()) {
             $initval = $row["init"];
-            $initval="$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"];
+            $initval="$initval.{$row['initmod']}{$row['dexmod']}{$row['dex']}";
+            error_log("{$row['charname']} -- $initval");
             $query = "INSERT into round_tracker (`combatantid`, `is_player`,`init`) VALUES ('".$row['playerid']."', '1', '$initval')";
+            error_log($query);
             $resultb = $mysqli->query($query);
 
             if (!$resultb) {
@@ -168,7 +170,99 @@ elseif ($_POST['function'] == "inits")
     }    
     $mystring='success';
     echo $mystring;     
-}    
+}
+elseif ($_POST['function'] == "changeroundnum")
+{
+    $round_number=$_POST["newround"];
+    $query = "UPDATE turn SET round_number = $round_number"; 
+    error_log($query);
+    $result = $mysqli->query($query); 
+    echo "success";
+    return;         
+}
+
+elseif ($_POST['function'] == "changeinit")
+{
+    $combataninfo=explode('-',$_POST["combatantinfo"]);
+    $combatantUID=$combataninfo[0];
+    $combatantID=$combataninfo[1];
+    $combatantIsPlayer=$combataninfo[2];
+    $newinit=$_POST["newinit"];    
+    $checkturn = "SELECT *, count(*) as count FROM turn WHERE uid = $combatantUID and creatureid = $combatantID and is_player = $combatantIsPlayer";
+    error_log("Query: $checkturn");
+    $checkresult = $mysqli->query($checkturn);    
+
+    if (!$checkresult) {
+        throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
+        echo "fail";
+        return;
+    }
+    else
+    {   
+        $row = $checkresult->fetch_assoc();
+        error_log("count is: " . $row['count']);
+        if ($row['count'] == "0"){
+            $updatequery = "UPDATE round_tracker SET init='$newinit' WHERE uid = $combatantUID and combatantid = $combatantID and is_player = $combatantIsPlayer";
+            error_log("not current turn, just updating where needed. $updatequery");
+            $updateresult = $mysqli->query($updatequery);    
+            echo "success";  
+            return;          
+        }
+        else // it's this guys turn... this is gonna suuuuck.
+        {
+            error_log("current turn, lots of shit to do");
+            $combatantinfo = "SELECT init FROM round_tracker WHERE uid = $combatantUID AND combatantid = $combatantID AND is_player = $combatantIsPlayer";
+            error_log($combatantinfo);
+            $combatantresult = $mysqli->query($combatantinfo);    
+            $combatantrow = $combatantresult->fetch_assoc();
+            $currentInit = $combatantrow['init'];
+            if ($newinit == $currentInit)
+            {
+                //init didn't change, just return ok.
+                echo "success";
+                return;
+            }
+            else
+            {   
+                $query = "SELECT * FROM round_tracker WHERE init < $currentInit AND killed = 0 ORDER BY init DESC LIMIT 1";
+                error_log($query);
+                $whoisnext = $mysqli->query($query);
+                $whoisnextRes = $whoisnext->fetch_assoc();
+                $nextUID=$whoisnextRes['uid'];
+                $nextID=$whoisnextRes['combatantid'];
+                $nextIsPlayer=$whoisnextRes['is_player'];
+
+                $result = $mysqli->query("SELECT * FROM turn LIMIT 1"); 
+                $row = $result->fetch_assoc();
+                $round_number=$row['round_number'];
+                if (!$round_number) //not yet set, so make it round 1
+                    $round_number=1;
+
+                //find the last combatant in the turn
+                $query = "SELECT  * FROM round_tracker ORDER BY init ASC, uid DESC LIMIT 1";
+                $result = $mysqli->query($query); 
+                $row = $result->fetch_assoc();
+                if ($combatantUID == $row['uid'])
+                    $round_number++;
+
+                if ($combatantIsPlayer)
+                    $mysqli->query("UPDATE players SET init = $newinit WHERE playerid=$combatantID");
+                $updatequery = "UPDATE round_tracker SET init='$newinit', turn_start=now() WHERE uid = $combatantUID and combatantid = $combatantID and is_player = $combatantIsPlayer";
+                error_log($updatequery);
+
+                $updateresult = $mysqli->query($updatequery);                    
+                $query = "truncate turn";
+                $result = $mysqli->query($query);   
+                $query = "INSERT INTO turn (`uid`,`round_number`, `creatureid`, `is_player`) VALUES ('$nextUID','$round_number', '$nextID','$nextIsPlayer')"; 
+                error_log($query);
+                $result = $mysqli->query($query); 
+                echo "success";
+                return;                                 
+            }
+        }
+    }
+    echo "fail";
+}
 elseif ($_POST['function'] == "monster")
 {
     $target_dir = realpath(dirname(__FILE__))."/uploads/";
@@ -307,7 +401,7 @@ elseif ($_POST['function'] == "editencounter")
         {
             foreach (explode(",",$creature_list) as $creatureid)  
             {
-                $query = "INSERT into combats (`combatid`, `creatureid`) VALUES ('$encounterid', '$creatureid')"; 
+                $query = "INSERT INTO combats (`combatid`, `creatureid`) VALUES ('$encounterid', '$creatureid')"; 
                 error_log( $query);
                 $result = $mysqli->query($query);
                 if (!$result) {
@@ -325,7 +419,7 @@ elseif ($_POST['function'] == "createandloadcombat")
     $encounterid=$_POST['encounterid'];
     $query = "truncate round_tracker";
     $result = $mysqli->query($query);
-    $query = "SELECT  combats.creatureid, creatures.showtruename, LPAD(creatures.initmod, 2, '0') as initmod,LPAD(creatures.dexmod, 2, '0') as dexmod,LPAD(creatures.dexscore, 2, '0') as dexscore,creatures.showac from combats left join creatures on creatures.creatureid=combats.creatureid where combatid=$encounterid";
+    $query = "SELECT  combats.creatureid, creatures.showtruename, LPAD(creatures.initmod, 2, '0') AS initmod,LPAD(creatures.dexmod, 2, '0') AS dexmod,LPAD(creatures.dexscore, 2, '0') AS dexscore,creatures.showac FROM combats LEFT JOIN creatures ON creatures.creatureid=combats.creatureid WHERE combatid=$encounterid";
     $result = $mysqli->query($query);
 
     if (!$result) {
@@ -336,6 +430,7 @@ elseif ($_POST['function'] == "createandloadcombat")
         while ($row = $result->fetch_assoc()) {
             $d20roll = crypto_rand_secure ( 1,20 );
             $initval = ($d20roll + $row["initmod"]);
+            error_log("$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"]);
             $initval="$initval.".$row["initmod"].$row["dexmod"].$row["dexscore"];
             $query = "INSERT into round_tracker (`combatantid`, `init`,`reveal_name`,`reveal_ac`) VALUES ('".$row['creatureid']."', '$initval','".$row["showtruename"]."','".$row["showac"]."')";
             $resultb = $mysqli->query($query);
@@ -346,12 +441,12 @@ elseif ($_POST['function'] == "createandloadcombat")
         }
     }
     //populate an array of all the tokenmarkers
-    $query = "SELECT GROUP_CONCAT(tid) as TIDs FROM tokenmarkers";
+    $query = "SELECT GROUP_CONCAT(tid) AS TIDs FROM tokenmarkers";
     $resultMarkers = $mysqli->query($query);
     $resultMarkersRow = $resultMarkers->fetch_assoc();
     $resultMarkersTIDs=array_reverse(explode(",",$resultMarkersRow['TIDs']));
 
-    $query = "SELECT GROUP_CONCAT(uid) as UIDs, combatantid, COUNT(*) c FROM round_tracker GROUP BY combatantid HAVING c > 1";
+    $query = "SELECT GROUP_CONCAT(uid) AS UIDs, combatantid, COUNT(*) c FROM round_tracker GROUP BY combatantid HAVING c > 1";
     $result = $mysqli->query($query);
     if (!$result) {
         throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
@@ -378,7 +473,6 @@ elseif ($_POST['function'] == "createandloadcombat")
 }
 elseif ($_POST['function'] == "startencounter")
 {
-
     $nextcreature=$_POST['nextcreature'];
     $is_player=$_POST['is_player'];
     $uid=$_POST['nextcreatureuid'];
@@ -430,14 +524,12 @@ elseif ($_POST['function'] == "startencounter")
             else
                 echo "dead, trying next";
         }
-            
     }
 
     if ($is_player)
     {  
         $query="UPDATE round_tracker set turn_start = now() where uid = $uid";
         $result = $mysqli->query($query);  
-
     }
     $query = "truncate turn";
     $result = $mysqli->query($query);    
@@ -469,6 +561,38 @@ elseif ($_POST['function'] == "changecreatureval")
     }
     $query="UPDATE round_tracker set $action = $value where uid = $uid";
     $result = $mysqli->query($query);  
+}
+elseif ($_POST['function'] == "changewhoseturn")
+{
+    $uid=$_POST['uid'];
+    $value=$_POST['value'];    
+    $action=$_POST['action'];
+
+
+    $query = "SELECT * FROM round_tracker WHERE uid = $uid";
+    $whoisnext = $mysqli->query($query);
+    $whoisnextRes = $whoisnext->fetch_assoc();
+    $nextUID=$whoisnextRes['uid'];
+    $nextID=$whoisnextRes['combatantid'];
+    $nextIsPlayer=$whoisnextRes['is_player'];
+
+    $result = $mysqli->query("SELECT * FROM turn LIMIT 1"); 
+    $row = $result->fetch_assoc();
+    $round_number=$row['round_number'];
+    if (!$round_number) //not yet set, so make it round 1
+        $round_number=1;
+
+    error_log("is player?  $nextIsPlayer -- q UPDATE round_tracker SET turn_start=now() WHERE uid = $nextUID and combatantid = $nextID and is_player = $nextIsPlayer");
+    if ($nextIsPlayer)
+        $mysqli->query("UPDATE round_tracker SET turn_start=now() WHERE uid = $nextUID and combatantid = $nextID and is_player = $nextIsPlayer");
+
+    $query = "truncate turn";
+    $result = $mysqli->query($query);   
+    $query = "INSERT INTO turn (`uid`,`round_number`, `creatureid`, `is_player`) VALUES ('$nextUID','$round_number', '$nextID','$nextIsPlayer')"; 
+    error_log($query);
+    $result = $mysqli->query($query); 
+    echo "successchangewhoseturn";
+    return;             
 }
 elseif ($_POST['function'] == "removeimage")
 {

@@ -17,7 +17,7 @@ function show_turn_data()
 	        $round_number=1;
 	    $current_combatantid=$row['uid'];
 
-		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc  
+		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc 
 									from round_tracker as rt 
 									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -200,7 +200,7 @@ function show_round_info()
 	        $round_number=1;
 	    $current_combatantid=$row['uid'];
 
-		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc 
+		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc,pc.heropoints 
 									from round_tracker as rt 
 									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -229,13 +229,12 @@ function show_round_info()
 	    	$killed=$row["killed"];
 	    	$tokenmarker = $row["marker_desc"];
 	    	$tokeninfo=null;
-
 	    	if ($show_in_tracker)
 	    	{
 	    		if ($is_player == '1')
 	    		{
-					echo '<li class="list-group-item list-group-item-success">'.$creaturename.'</li>';
-							
+					echo '<li class="list-group-item list-group-item-success">'.$creaturename.'<span class="badge">';
+					echo '</span></li>';
 				}
 				else
 				{

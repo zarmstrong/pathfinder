@@ -1181,7 +1181,7 @@ function show_encounter_picker()
 function show_round_tracker()
 {
 	global $mysqli;
-	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc 
+	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc,pc.heropoints
 								from round_tracker as rt 
 								left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 								left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -1210,6 +1210,7 @@ function show_round_tracker()
     	$show_in_tracker=$row["show_in_tracker"];
     	$tokenmarker = $row["marker_desc"];
     	$tokeninfo=null;
+		$heropoints=$row['heropoints'];
     	if (!$is_player)
     	{
     		$resultb = $mysqli->query("SELECT * from creatures where creatureid=$combatantid");
@@ -1223,6 +1224,15 @@ function show_round_tracker()
 				<span id="combatantid['.$combatantid.']" data-isplayer="'.($is_player ? $is_player : "0").'" data-recordid="'.$uid.'">
 				Init: <input type="text" maxlength="12" size="10" style="background-color:#adadad;" id="'.$uid.'-'.$combatantid.'-'.($is_player ? $is_player : "0").'" name="init-'.$combatantid.'" value="'.$init.'" > -- '. ($is_player ? $creaturename : 
 				( $reveal_name ? "Displaying $creaturename" : $fakename . " [$creaturename]" )).(isset($tokeninfo) ? $tokeninfo : "").$acwords.' </span>';
+		echo '<span class="badge">';
+    	if ($is_player)
+    	{
+			for ($points = 1; $points <= $heropoints; $points++) 
+			{
+				echo '<i class="glyphicon glyphicon-star"></i>';
+			}
+		}
+		echo '</span>';				
 		echo '<script type="text/javascript">
 				$("input[name=init-'.$combatantid.']").change(function() {
 					newinit=$(this).val();

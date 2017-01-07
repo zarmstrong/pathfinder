@@ -1181,7 +1181,14 @@ function show_encounter_picker()
 function show_round_tracker()
 {
 	global $mysqli;
-	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc,pc.heropoints
+    $result = $mysqli->query("SELECT * FROM turn LIMIT 1"); 
+    $row = $result->fetch_assoc();
+    $round_number=$row['round_number'];
+    if (!$round_number) //not yet set, so make it round 1
+        $round_number=1;
+
+	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc,pc.heropoints,
+								rt.deaf,rt.blind,rt.mute,rt.burn,rt.sleep,rt.stone,rt.slow,rt.haste,rt.unconcious,rt.stuck,rt.invisible,rt.prone,rt.enlarge,rt.shrink,rt.bleeding
 								from round_tracker as rt 
 								left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 								left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -1191,6 +1198,7 @@ function show_round_tracker()
 	    throw new Exception("Database Error [{$mysqli->errno}] {$mysqli->error}");
 	    return;
 	}	
+	echo '<div class="row"><div class="list-group col-sm-offset-1 col-lg-6"><h4>Round <span name="roundnum" id="roundnum">'.$round_number.'</h4></div></div>';
 	echo '<div class="row"><div class="list-group col-sm-offset-1 col-lg-6" id="combat_tracker_div">
        
             <ul class="list-group" id="combat_tracker_list" >';
@@ -1211,6 +1219,33 @@ function show_round_tracker()
     	$tokenmarker = $row["marker_desc"];
     	$tokeninfo=null;
 		$heropoints=$row['heropoints'];
+    	$statusEffects=array(
+			'deaf',
+			'blind',
+			'mute',
+			['burn','Burning'],
+			['sleep','Sleeping'],
+			['stone','Petrified'],
+			['slow','Slowed'],
+			['haste','Hastened'],
+			'unconcious',
+			['stuck','Entangled/Stuck'],
+			'invisible',
+			'prone',
+			['enlarge','Enlarged'],
+			['shrink','Shrunken'],
+			'bleeding'
+		);
+    	foreach ($statusEffects as $effectName) {
+    		if (!is_array($effectName))
+		    	$$effectName=$row["$effectName"];
+		    else
+		    {
+		    	$name=$effectName[0];
+		    	${$name}=$row["$name"];
+		    }
+		    	
+		}		
     	if (!$is_player)
     	{
     		$resultb = $mysqli->query("SELECT * from creatures where creatureid=$combatantid");
@@ -1270,6 +1305,33 @@ function show_round_tracker()
 		}
 		echo '		<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_5" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="make_it_my_turn">Change to My Turn</label>';
 
+		echo '  </p>';
+
+		echo '  <p class="list-group-item-text">';		  
+		echo '	<label>Status Effects:</label>  ';
+
+		$incrementer=1;
+		$arraySize=count($statusEffects);
+    	foreach ($statusEffects as $effectName) {
+    		if (!is_array($effectName))
+    		{
+		    	$name=$effectName;
+		    	$capName=ucfirst($name);
+		    }
+		    else
+		    {
+		    	$name=$effectName[0];
+		    	$capName=ucfirst($effectName[1]);				    	
+		    }
+			echo '<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_'.(5+$incrementer).'" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="'.$name.'" '. (${$name} >0 ? 'checked' : '').'>'.$capName.'</label> <input type="text" maxlength="2" size="1" id="'.$name.'_round" name="'.$name.'_'.(5+$incrementer).'_round" value="'.(${$name} >0 ? ${$name} : $round_number+2).'">';
+			if ($incrementer % 6 == 0)
+				echo "<br/>";
+			else
+				if ($incrementer != $arraySize)
+				echo ' <strong>|</strong>  ';
+		    $incrementer++;
+		}	 		
+
 		echo '  </p>
 		  </li>';
 				$count++;
@@ -1291,9 +1353,17 @@ function show_round_tracker()
 		if (which.checked)
 			setVal=1;
 		if (dbaction == "make_it_my_turn")
+		{
 			func="changewhoseturn"
+			which.checked = false;
+		}
 		else
 			func="changecreatureval"
+
+		if ( $("input#"+dbaction+"_"+uid+"_round").val())
+		{
+			console.log( $("input#"+dbaction+"_"+uid+"_round").val())
+		}
 	    $.ajax({
 	        type: "POST",
 	        url: "ajax.php",
@@ -1463,6 +1533,7 @@ function encounter_controls()
 	        success : function(text){
 	            if (text == "success"){
 	            	console.log("round changed to " + newroundnum);
+	            	$("span#roundnum").html(newroundnum);
 	            }
 	            else 
 	            {

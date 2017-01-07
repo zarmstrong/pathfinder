@@ -22,7 +22,6 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 	<!-- Latest compiled and minified JavaScript -->
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-	<script src="../timer/jquery.countdown.min.js">  crossorigin="anonymous"></script>
 	<?php 
   include 'head.php'; 
   include 'inc/functions.php';
@@ -32,124 +31,10 @@
     <div class="row">
       <div class="col-md-4" id="leftcolumn"><?php show_turn_data(); ?></div>
       <div class="col-md-4" id="middlecolumn"><?php show_round_info(); ?></div>
-      <div class="col-md-4" id="rightcolumn"></div>
+      <div class="col-md-4" id="rightcolumn"><?php show_legend(); ?></div>
     </div>
+  </div>
 
-
-<?php 
-
-$useold=0;
-if ($useold)
-{?>
-      <div class="starter-template">
-        <h1>Pathfinder Turn Timer</h1>
-        <p class="lead">Magic is here...</p>
-	    <div class="panel panel-default" data-toggle="tooltip" data-placement="top" title="Beautiful, isn't it?" >
-	      <div class="panel-body">
-	        <div class="lead" id="clock"></div>
-	      </div>
-	    </div>
-
-
-    <button type="button" class="btn btn-primary" id="btn-reset">
-      <i class="glyphicon glyphicon-repeat"></i>
-      Reset
-    </button>
-
-    <div class="btn-group" data-toggle="buttons">
-      <label class="btn btn-default active" id="btn-stop">
-        <input type="radio" name="options" id="option2" autocomplete="off" >
-        <i class="glyphicon glyphicon-stop"></i>
-        Stop
-      </label>
-
-      <label class="btn btn-default" id="btn-resume">
-        <input type="radio" name="options3" id="option3" autocomplete="off" >
-        <i class="glyphicon glyphicon-play"></i>
-        Start
-      </label>
-
-      </div>
-
-    </div><!-- /.container -->
-    <script type="text/javascript">
-		$(document).keydown(function(e) {
-			//alert(e.which);
-		    switch(e.which) {
-		    	case 90: //z
-		    	$('#btn-reset').click();
-		    	break;
-		    	case 88: //x
-		    	$('#btn-stop').click();
-		    	break;
-		    	case 67: //c
-		    	$('#btn-resume').click();
-		    	break;
-
-		        case 37: // left
-		        break;
-
-		        case 38: // up
-		        break;
-
-		        case 39: // right
-		        break;
-
-		        case 40: // down
-		        break;
-
-		        default: return; // exit this handler for other keys
-		    }
-		    e.preventDefault(); // prevent the default action (scroll / move caret)
-		});
-
-    </script>
-
-<script type="text/javascript">
-  // Turn on Bootstrap
-  $('[data-toggle="tooltip"]').tooltip();
-
-  // 15 days from now!
-  function getTurnTimeFromNow() {
-    return new Date(new Date().valueOf() +  6 * 1000);
-  }
-
-  var $clock = $('#clock');
-
-  $clock.countdown(getTurnTimeFromNow(), function(event) {
-    $(this).html(event.strftime('%M:%S'));
-  }).on('finish.countdown', function() {
-  		$(this).addClass("timesup");
-	    $("#btn-stop").addClass("active");
-	    $("#btn-resume").removeClass("active");
-  });
-
-  $('#btn-reset').click(function() {
-    $('div#clock').removeClass("lead timesup").addClass("lead");    
-    $clock.countdown(getTurnTimeFromNow());
-    $('div#clock').countdown('stop');
-    $("#btn-stop").addClass("active");
-    $("#btn-resume").removeClass("active");  
-
-  });
-
-  $('#btn-stop').click(function() {
-    $clock.countdown('stop');
-    $("#btn-stop").addClass(" active");
-    $("#btn-resume").removeClass("active");
-  });
-
-  $('#btn-resume').click(function() {
-    $clock.countdown('resume');
-    $("#btn-stop").removeClass("active");
-    $("#btn-resume").addClass("active");
-  });
-
-  $('div#clock').countdown('stop');
-</script>
-<?php
-}
-?>
 
 
 <script type="text/javascript">
@@ -174,6 +59,22 @@ setInterval(function() {
 setInterval(function() {
   getData("middlecolumn");
 }, 2500);
+
+var audioElementStart = document.createElement('audio');
+audioElementStart.setAttribute('src', '/sounds/ding.mp3');
+audioElementStart.load();
+var audioElementEnd = document.createElement('audio');
+audioElementEnd.setAttribute('src', '/sounds/buzz.mp3');
+audioElementEnd.load();
+function play_turnstart_sound()
+{
+  audioElementStart.play();  
+}
+
+function play_turnend_sound()
+{
+  audioElementEnd.play();  
+}
 </script>
   </body>
 </html>

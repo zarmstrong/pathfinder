@@ -10,6 +10,10 @@ elseif ($_GET['function']=='middlecolumn')
 {
     show_round_info();
 }
+elseif ($_GET['function']=='rightcolumn')
+{
+    show_legend();
+}
 else{
     //Do nothing
     //error_log($_GET['function']);

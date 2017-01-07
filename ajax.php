@@ -249,8 +249,16 @@ elseif ($_POST['function'] == "changeinit")
                     $mysqli->query("UPDATE players SET init = $newinit WHERE playerid=$combatantID");
                 $updatequery = "UPDATE round_tracker SET init='$newinit', turn_start=now() WHERE uid = $combatantUID and combatantid = $combatantID and is_player = $combatantIsPlayer";
                 error_log($updatequery);
-
                 $updateresult = $mysqli->query($updatequery);                    
+
+                if ($nextIsPlayer)
+                {
+                    $updatequery = "UPDATE round_tracker SET turn_start=now() WHERE uid = $nextUID and combatantid = $nextID and is_player = $nextIsPlayer";
+                    error_log($updatequery);
+                    $updateresult = $mysqli->query($updatequery);                    
+                }
+
+
                 $query = "truncate turn";
                 $result = $mysqli->query($query);   
                 $query = "INSERT INTO turn (`uid`,`round_number`, `creatureid`, `is_player`) VALUES ('$nextUID','$round_number', '$nextID','$nextIsPlayer')"; 
@@ -557,9 +565,9 @@ elseif ($_POST['function'] == "changecreatureval")
         case "killed":
             $field="";        
         break;        
-
     }
     $query="UPDATE round_tracker set $action = $value where uid = $uid";
+    error_log($query);
     $result = $mysqli->query($query);  
 }
 elseif ($_POST['function'] == "changewhoseturn")

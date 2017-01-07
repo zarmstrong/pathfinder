@@ -29,7 +29,7 @@ function show_turn_data()
 		}	
 		echo '<div class="row">
 				<div class="col-xs-12"><!-- h1>Combat Tracker</h1 --></div>
-				<div class="col-xs-12" id="combat_tracker_div">';
+				<div class="col-xs-12" id="combat_turn_div">';
 	    $count=1;
 	    while ($row = $result->fetch_assoc()) {
 	    	$acwords='';
@@ -58,21 +58,26 @@ function show_turn_data()
 		    		{
 						echo '<h2>Current turn: '.$creaturename.'</h2>'
 							 .'<span id="nextcreaturename"></span><br/>';
-
-						$timeleft=(strtotime($turn_start)+60)-time();
+						$turntime=60;
+						$timeleft=(strtotime($turn_start)+$turntime)-time();
 						if ($timeleft <1)
 						{
+							if ($timeleft == 0)
+								echo '<script type="text/javascript">play_turnend_sound();</script>';							
 							$timeleft=0;
 							$timeclass='col-xs-5 alert-danger';
 							$timewords="<h1>Time's up!</h1>";
 						}
 						elseif ($timeleft <10)
 						{
+
 							$timeclass='col-xs-7 alert-warning';
 							$timewords="<h2>$timeleft SECONDS LEFT.</h2>";
 						}
 						else
 						{
+							if ($timeleft == ($turntime-1))
+								echo '<script type="text/javascript">play_turnstart_sound();</script>';
 							$timeclass='col-xs-5 alert-success';
 							$timewords="<h3>$timeleft seconds left.</h3>";
 						}
@@ -181,7 +186,44 @@ function show_turn_data()
 }
 
 
+function show_legend()
+{
+	echo '<div class="row">
+		<div class="col-xs-12"><h1>Legend</h1></div>
+		<div class="col-xs-12">';
 
+	$statusEffects=array(
+		'deaf',
+		'blind',
+		'mute',
+		['burn','Burning'],
+		['sleep','Sleeping'],
+		['stone','Petrified'],
+		['slow','Slowed'],
+		['haste','Hastened'],
+		'unconcious',
+		['stuck','Entangled/Stuck'],
+		'invisible',
+		'prone',
+		['enlarge','Enlarged'],
+		['shrink','Shrunken'],
+		'bleeding'
+	);
+	foreach ($statusEffects as $effectName)
+	{
+		if (!is_array($effectName))
+			echo '<i title="'.$effectName.'" class="glyphicon icon-legend-'.$effectName.'"></i> '.ucfirst("$effectName").'<br>';
+	    else
+	    {
+	    	$name=$effectName[0];
+	    	$capName=ucfirst($effectName[1]);
+	    	echo '<i title="'.$name.'" class="glyphicon icon-legend-'.$name.'"></i> '.$capName.'<br>';
+	    }
+			
+	}	
+	echo '  </div>
+		  </div>';	
+}
 
 function show_round_info()
 {
@@ -200,7 +242,8 @@ function show_round_info()
 	        $round_number=1;
 	    $current_combatantid=$row['uid'];
 
-		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc,pc.heropoints 
+		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc,pc.heropoints,
+									rt.deaf,rt.blind,rt.mute,rt.burn,rt.sleep,rt.stone,rt.slow,rt.haste,rt.unconcious,rt.stuck,rt.invisible,rt.prone,rt.enlarge,rt.shrink,rt.bleeding
 									from round_tracker as rt 
 									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -229,12 +272,57 @@ function show_round_info()
 	    	$killed=$row["killed"];
 	    	$tokenmarker = $row["marker_desc"];
 	    	$tokeninfo=null;
+	    	$statusEffects=array(
+				'deaf',
+				'blind',
+				'mute',
+				['burn','Burning'],
+				['sleep','Sleeping'],
+				['stone','Petrified'],
+				['slow','Slowed'],
+				['haste','Hastened'],
+				'unconcious',
+				['stuck','Entangled/Stuck'],
+				'invisible',
+				'prone',
+				['enlarge','Enlarged'],
+				['shrink','Shrunken'],
+				'bleeding'
+			);
+	    	foreach ($statusEffects as $effectName) {
+	    		if (!is_array($effectName))
+			    	$$effectName=$row["$effectName"];
+			    else
+			    {
+			    	$name=$effectName[0];
+			    	${$name}=$row["$name"];
+			    }
+			    	
+			}	
+
 	    	if ($show_in_tracker)
 	    	{
+	    		$badgestart='<span class="badge badge-info pull-right">';
+	    		$badgetext="";
+
+		    	foreach ($statusEffects as $effectName) {
+		    		if (!is_array($effectName))
+		    		{
+				    	$badgetext.= (${$effectName} >= $round_number ? '<i title="'.$effectName.'" class="glyphicon icon-'.$effectName.'"></i>': ""); 
+				    }
+				    else
+				    {
+				    	$name=$effectName[0];
+				    	$capName=ucfirst($effectName[1]);				    	
+				    	$badgetext.= (${$name} >= $round_number ? '<i title="'.$name.'" class="glyphicon icon-'.$name.'"></i>': ""); 
+				    }
+				}	    		
+
+	    		$badgeend='</span>';
+	    		
 	    		if ($is_player == '1')
 	    		{
-					echo '<li class="list-group-item list-group-item-success">'.$creaturename.'<span class="badge">';
-					echo '</span></li>';
+					echo '<li class="list-group-item list-group-item-success">'.$creaturename.$badgestart.$badgetext.$badgeend.'</li>';
 				}
 				else
 				{
@@ -245,19 +333,21 @@ function show_round_info()
 			    		$resultb = $mysqli->query("SELECT * from creatures where creatureid=$combatantid");
 			    		$rowb = $resultb->fetch_assoc();
 			    		$creatureAC=$rowb['ac'];
-			    		$acwords='<span class="badge"><strong>AC:</strong> '.$creatureAC.'</span>';
+			    		$acwords='<strong>AC:</strong> '.$creatureAC.'';
 		    		}
 		    		if ($killed)
 		    			$deathwords='<i class="glyphicon-skull"></i>';
 		    		if ($tokenmarker)
 		    			$tokeninfo=" [$tokenmarker] ";		    		
 					//not a player, but show this monster data
-					echo '<li class="list-group-item list-group-item-danger"><strong>'.($reveal_name ? "$creaturename" : $fakename ).'</strong>'.$deathwords.(isset($tokeninfo) ? $tokeninfo : "").$acwords. '</li>';
+					echo '<li class="list-group-item list-group-item-danger"><strong>'.($reveal_name ? "$creaturename" : $fakename ).'</strong>'.$deathwords.(isset($tokeninfo) ? $tokeninfo : "").$badgestart.$acwords.$badgetext.$badgeend.'</li>';
 
 				}
 			}
 	    }
 	    echo '</ul>';
+	    echo '  </div>
+	    	  </div>';	    
 	}
 }
 

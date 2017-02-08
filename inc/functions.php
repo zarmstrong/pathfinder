@@ -340,7 +340,8 @@ function show_round_info()
 		    		if ($tokenmarker)
 		    			$tokeninfo=" [$tokenmarker] ";		    		
 					//not a player, but show this monster data
-					echo '<li class="list-group-item list-group-item-danger"><strong>'.($reveal_name ? "$creaturename" : $fakename ).'</strong>'.$deathwords.(isset($tokeninfo) ? $tokeninfo : "").$badgestart.$acwords.$badgetext.$badgeend.'</li>';
+
+					echo '<li class="list-group-item list-group-item-danger ">'.($current_combatantid == $uid ?  '<i title="arrow-right" class="glyphicon icon-right-arrow"></i>  ' : '').'<strong>'.($reveal_name ? "$creaturename" : $fakename ).'</strong>'.$deathwords.(isset($tokeninfo) ? $tokeninfo : "").$badgestart.$acwords.$badgetext.$badgeend.'</li>';
 
 				}
 			}

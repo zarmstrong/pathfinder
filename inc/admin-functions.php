@@ -1323,7 +1323,7 @@ function show_round_tracker()
 		    	$name=$effectName[0];
 		    	$capName=ucfirst($effectName[1]);				    	
 		    }
-			echo '<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_'.(5+$incrementer).'" type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="'.$name.'" '. (${$name} >0 ? 'checked' : '').'>'.$capName.'</label> <input type="text" maxlength="2" size="1" id="'.$name.'_round" name="'.$name.'_'.(5+$incrementer).'_round" value="'.(${$name} >0 ? ${$name} : $round_number+2).'">';
+			echo '<label><input onchange="changedvalforcreature(this)" name="checkbox_'.$row["uid"].'_'.(5+$incrementer).'" id="'.$name.'_'.$row["uid"].'_'."checkbox".'"  type="checkbox" data-uid="'.$row["uid"].'" data-dbaction="'.$name.'" '. (${$name} >0 ? 'checked' : '').'>'.$capName.'</label> <input  onchange="changedvalforcreature(this)" type="text" maxlength="2" data-uid="'.$row["uid"].'" data-dbaction="'.$name.'" size="1" id="'.$name.'_'.$row["uid"].'_round" name="'.$name.'_'.$row["uid"].'_round" value="'.(${$name} >0 ? ${$name} : $round_number+2).'">';
 			if ($incrementer % 6 == 0)
 				echo "<br/>";
 			else
@@ -1349,9 +1349,12 @@ function show_round_tracker()
 		var dbaction = $(which).data("dbaction");
 		var uid = $(which).data("uid");
 
-		var setVal=0;
-		if (which.checked)
-			setVal=1;
+		if ($(which).is(':checkbox'))
+		{
+			var setVal=0;
+			if ($(which).val() == "on")
+				setVal=1;
+		}
 		if (dbaction == "make_it_my_turn")
 		{
 			func="changewhoseturn"
@@ -1359,10 +1362,16 @@ function show_round_tracker()
 		}
 		else
 			func="changecreatureval"
-
+		//console.log ("Thing: " + "input#"+dbaction+"_"+uid+"_round")
 		if ( $("input#"+dbaction+"_"+uid+"_round").val())
 		{
-			console.log( $("input#"+dbaction+"_"+uid+"_round").val())
+			//console.log( "VALUE: " + $("input#"+dbaction+"_"+uid+"_round").val())
+			//console.log("is object input#"+dbaction+"_"+uid+"_checkbox" + " checked?  " +$("input#"+dbaction+"_"+uid+"_checkbox").val());
+			if ($("input#"+dbaction+"_"+uid+"_checkbox").val() == "on" )
+				setVal=$("input#"+dbaction+"_"+uid+"_round").val();
+			else
+				setVal=0;
+
 		}
 	    $.ajax({
 	        type: "POST",

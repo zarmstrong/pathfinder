@@ -1348,11 +1348,11 @@ function show_round_tracker()
 	{
 		var dbaction = $(which).data("dbaction");
 		var uid = $(which).data("uid");
-
+		//console.log("which : " + $(which).is(':checked') + " uid: " + uid + " action: " + dbaction)
 		if ($(which).is(':checkbox'))
 		{
 			var setVal=0;
-			if ($(which).val() == "on")
+			if ($(which).is(':checked') == true)
 				setVal=1;
 		}
 		if (dbaction == "make_it_my_turn")
@@ -1367,7 +1367,7 @@ function show_round_tracker()
 		{
 			//console.log( "VALUE: " + $("input#"+dbaction+"_"+uid+"_round").val())
 			//console.log("is object input#"+dbaction+"_"+uid+"_checkbox" + " checked?  " +$("input#"+dbaction+"_"+uid+"_checkbox").val());
-			if ($("input#"+dbaction+"_"+uid+"_checkbox").val() == "on" )
+			if ($("input#"+dbaction+"_"+uid+"_checkbox").is(':checked') )
 				setVal=$("input#"+dbaction+"_"+uid+"_round").val();
 			else
 				setVal=0;

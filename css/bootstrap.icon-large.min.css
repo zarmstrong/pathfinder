@@ -15,6 +15,10 @@
 .icon-shrink{background-image:url("../img/collapse_toggle_alt_basic-512.png");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}
 .icon-bleeding{background-image:url("../img/bleeding.png");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}
 .icon-right-arrow{background-image:url("../img/glyphicons-212-arrow-right.png");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}
+.icon-fear{background-image:url("../img/fear2.png");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}
+.icon-confused{background-image:url("../img/confused.png");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}
+.icon-paralysed{background-image:url("../img/paralysed.png");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}
+.icon-burn{background-image:url("../img/burn.png");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}
 
 .icon-legend-skull{background-image:url("../img/glyphicons-291-skull.png");background-position:0px;background-repeat:no-repeat;display:inline-block;height:28px;line-height:28px;vertical-align:text-bottom;width:28px}
 .icon-legend-haste{background-image:url("../img/glyphicons-340-rabbit.png");background-size:27px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:28px;line-height:28px;vertical-align:text-bottom;width:28px}
@@ -32,7 +36,8 @@
 .icon-legend-enlarge{background-image:url("../img/enlarge.png");background-size:28px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:28px;line-height:28px;vertical-align:text-bottom;width:28px}
 .icon-legend-shrink{background-image:url("../img/collapse_toggle_alt_basic-512.png");background-size:28px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:28px;line-height:28px;vertical-align:text-bottom;width:28px}
 .icon-legend-bleeding{background-image:url("../img/bleeding.png");background-size:28px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:28px;line-height:28px;vertical-align:text-bottom;width:28px}
-
+.icon-legend-fear{background-image:url("../img/fear2.png");background-size:28px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:28px;line-height:28px;vertical-align:text-bottom;width:28px}
+.icon-legend-confused{background-image:url("../img/confused.png");background-size:28px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:28px;line-height:28px;vertical-align:text-bottom;width:28px}
 
 .icon-something{background-image:url("../img/");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}
 .icon-something{background-image:url("../img/");background-size:20px;background-position:0px;background-repeat:no-repeat;display:inline-block;height:20px;line-height:20px;vertical-align:text-bottom;width:20px}

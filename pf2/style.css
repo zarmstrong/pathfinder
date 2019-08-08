@@ -1,0 +1,10 @@
+<!--
+style sheet
+-->
+   @page {
+         size: landscape;   /* auto is the initial value */
+      }
+
+@media print{@page {size: landscape}}
+
+      

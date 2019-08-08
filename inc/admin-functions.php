@@ -1188,7 +1188,7 @@ function show_round_tracker()
         $round_number=1;
 
 	$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc,pc.heropoints,
-								rt.deaf,rt.blind,rt.mute,rt.burn,rt.sleep,rt.stone,rt.slow,rt.haste,rt.unconcious,rt.stuck,rt.invisible,rt.prone,rt.enlarge,rt.shrink,rt.bleeding
+								rt.deaf,rt.blind,rt.mute,rt.burn,rt.sleep,rt.stone,rt.slow,rt.haste,rt.unconcious,rt.stuck,rt.invisible,rt.prone,rt.enlarge,rt.shrink,rt.bleeding,rt.fear,rt.confused,rt.burning,rt.paralysed
 								from round_tracker as rt 
 								left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 								left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -1220,21 +1220,25 @@ function show_round_tracker()
     	$tokeninfo=null;
 		$heropoints=$row['heropoints'];
     	$statusEffects=array(
-			'deaf',
-			'blind',
-			'mute',
+			['deaf','Deaf'],
+			['blind','Blind'],
+			['mute','Mute'],
 			['burn','Burning'],
 			['sleep','Sleeping'],
 			['stone','Petrified'],
 			['slow','Slowed'],
 			['haste','Hastened'],
-			'unconcious',
+			['unconcious','Unconcious'],
 			['stuck','Entangled/Stuck'],
-			'invisible',
-			'prone',
+			['invisible','Invisible'],
+			['prone','Prone'],
 			['enlarge','Enlarged'],
 			['shrink','Shrunken'],
-			'bleeding'
+			['bleeding','Bleeding'],
+			['fear','Afraid'],
+			['confused','Confused'],
+			['burning','Burning'],
+			['paralysed','Paralysed']
 		);
     	foreach ($statusEffects as $effectName) {
     		if (!is_array($effectName))

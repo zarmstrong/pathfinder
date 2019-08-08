@@ -190,27 +190,54 @@ function show_legend()
 {
 	echo '<div class="row">
 		<div class="col-xs-12"><h1>Legend</h1></div>
-		<div class="col-xs-12">';
+';
 
 	$statusEffects=array(
-		'deaf',
-		'blind',
-		'mute',
+		['deaf','Deaf'],
+		['blind','Blind'],
+		['mute','Mute'],
 		['burn','Burning'],
 		['sleep','Sleeping'],
 		['stone','Petrified'],
 		['slow','Slowed'],
 		['haste','Hastened'],
-		'unconcious',
+		['unconcious','Unconcious'],
 		['stuck','Entangled/Stuck'],
-		'invisible',
-		'prone',
+		['invisible','Invisible'],
+		['prone','Prone'],
 		['enlarge','Enlarged'],
 		['shrink','Shrunken'],
-		'bleeding'
+		['bleeding','Bleeding'],
+		['fear','Afraid'],
+		['confused','Confused'],
+		['burning','Burning'],
+		['paralysed','Paralysed']
 	);
+	$arraySize=sizeof($statusEffects);
+	echo "Number of items: $arraySize<br/>";
+	$loopMax=8;
+	$colcount=ceil($arraySize / $loopMax);
+	echo "Number of columns: $colcount<br/>";
+	$loopcount=1;
+	switch ($colcount) {
+    case 1:
+        $colsize=12;
+        break;
+    case 2:
+        $colsize=6;
+        break;
+    case 3:
+        $colsize=4;
+        break;
+    case 4:
+        $colsize=3;
+        break;
+	}
+	echo '<div class="row">';
 	foreach ($statusEffects as $effectName)
-	{
+	{	
+		if ($loopcount == 1)
+			echo '<div class="col-xs-'.$colsize.'">';
 		if (!is_array($effectName))
 			echo '<i title="'.$effectName.'" class="glyphicon icon-legend-'.$effectName.'"></i> '.ucfirst("$effectName").'<br>';
 	    else
@@ -219,7 +246,12 @@ function show_legend()
 	    	$capName=ucfirst($effectName[1]);
 	    	echo '<i title="'.$name.'" class="glyphicon icon-legend-'.$name.'"></i> '.$capName.'<br>';
 	    }
-			
+		if ($loopcount == $loopMax)
+		{
+			$loopcount=0;
+			echo '</div>';	
+		}
+		$loopcount++;
 	}	
 	echo '  </div>
 		  </div>';	
@@ -243,7 +275,7 @@ function show_round_info()
 	    $current_combatantid=$row['uid'];
 
 		$result = $mysqli->query("SELECT rt.uid,rt.combatantid,COALESCE(npc.truename,pc.charname) as creaturename,npc.fakename,npc.image,rt.is_player,rt.init,rt.reveal_name,rt.turn_start,rt.reveal_ac,rt.show_in_tracker,rt.killed,tm.marker_desc,pc.heropoints,
-									rt.deaf,rt.blind,rt.mute,rt.burn,rt.sleep,rt.stone,rt.slow,rt.haste,rt.unconcious,rt.stuck,rt.invisible,rt.prone,rt.enlarge,rt.shrink,rt.bleeding
+									rt.deaf,rt.blind,rt.mute,rt.burn,rt.sleep,rt.stone,rt.slow,rt.haste,rt.unconcious,rt.stuck,rt.invisible,rt.prone,rt.enlarge,rt.shrink,rt.bleeding,rt.fear,rt.confused,rt.burning,rt.paralysed
 									from round_tracker as rt 
 									left join creatures as npc on npc.creatureid = rt.combatantid and rt.is_player !=1 
 									left join players as pc on pc.playerid = rt.combatantid and rt.is_player = 1 
@@ -273,21 +305,25 @@ function show_round_info()
 	    	$tokenmarker = $row["marker_desc"];
 	    	$tokeninfo=null;
 	    	$statusEffects=array(
-				'deaf',
-				'blind',
-				'mute',
+				['deaf','Deaf'],
+				['blind','Blind'],
+				['mute','Mute'],
 				['burn','Burning'],
 				['sleep','Sleeping'],
 				['stone','Petrified'],
 				['slow','Slowed'],
 				['haste','Hastened'],
-				'unconcious',
+				['unconcious','Unconcious'],
 				['stuck','Entangled/Stuck'],
-				'invisible',
-				'prone',
+				['invisible','Invisible'],
+				['prone','Prone'],
 				['enlarge','Enlarged'],
 				['shrink','Shrunken'],
-				'bleeding'
+				['bleeding','Bleeding'],
+				['fear','Afraid'],
+				['confused','Confused'],
+				['burning','Burning'],
+				['paralysed','Paralysed']		
 			);
 	    	foreach ($statusEffects as $effectName) {
 	    		if (!is_array($effectName))

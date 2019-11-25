@@ -55,7 +55,7 @@ chromeOptions.add_argument("--headless")
 driver = webdriver.Chrome(chrome_options=chromeOptions) 
 # driver.get("https://paizo.com/store/pathfinder/society/season10")
 # driver.get("https://paizo.com/store/pathfinder/society/past/season9")
-driver.get("https://paizo.com/store/pathfinder/society/past/season8")
+# driver.get("https://paizo.com/store/pathfinder/society/past/season8")
 # driver.get("https://paizo.com/store/pathfinder/society/past/season7")
 # driver.get("https://paizo.com/store/pathfinder/society/past/season6")
 # driver.get("https://paizo.com/store/pathfinder/society/past/season5")
@@ -63,7 +63,7 @@ driver.get("https://paizo.com/store/pathfinder/society/past/season8")
 # driver.get("https://paizo.com/store/pathfinder/society/past/season3")
 # driver.get("https://paizo.com/store/pathfinder/society/past/season2")
 # driver.get("https://paizo.com/store/pathfinder/society/past/season1")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season0")
+driver.get("https://paizo.com/store/pathfinder/society/past/season0")
 
 driver.implicitly_wait(100)
 
@@ -98,8 +98,8 @@ for link in links:
 	driver.get(link)
 	driver.implicitly_wait(100)
 	soup = BeautifulSoup(driver.page_source, 'html.parser')
-	scenariotitle=soup.find('h1', attrs={'itemprop':'name'}).getText()
-	scenariodesc=soup.find('div', attrs={'itemprop':'description'}).getText()
+	scenariotitle=soup.find('h1', attrs={'itemprop':'name'}).getText().replace(u"\u2014", u"-").replace(u"\u2013", u"-").replace(u"\u2012", u"-").replace(u"\u2011", u"-").replace(u"\u2010", u"-")
+	scenariodesc=soup.find('div', attrs={'itemprop':'description'}).getText().replace(u"\u2014", u"-").replace(u"\u2013", u"-").replace(u"\u2012", u"-").replace(u"\u2011", u"-").replace(u"\u2010", u"-")
 	#print scenariotitle
 	#print scenariodesc
 	if "#" in scenariotitle:
@@ -111,7 +111,7 @@ for link in links:
 	game=scenariotitleinfo[0].strip()
 	numbername=scenariotitleinfo[1].split(":",1)
 	if "Quest" in scenariotitleinfo[0]:
-		gamename=scenariotitleinfo[1]
+		gamename=scenariotitleinfo[1].replace("'","\'")
 		gameseason="9"
 		scenarionum="Q"
 		gamenum="q"

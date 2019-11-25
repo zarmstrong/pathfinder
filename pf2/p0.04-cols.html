@@ -35,27 +35,27 @@
 </script>
   <!-- link href="style.css" rel="stylesheet" type="text/css" /-->
   <style>
-	@media print{ @page { margin: 0.05cm } }
+
+ 	@media print{ @page { margin: 0.05cm } }
 	span.forcepagebreak { 
 	   page-break-after: always; 
-	   page-break-inside: avoid;
-	}
-	/* #pathfinder-training-table-spells-items { */
-	#pathfinder-training-table-swords-items {
-	page-break-before: always; 
+	   -webkit-column-break-after: always; -webkit-column-break-inside: avoid; page-break-inside: avoid;
 	}
 	table{
-		page-break-inside: avoid;
+		-webkit-column-break-inside: avoid; page-break-inside: avoid;
 	}
 	h1, h2, h3, h4, h5{
-		 page-break-after: avoid; 
+		 page-break-after: avoid; -webkit-column-break-after: avoid;
 	}
-	article h1,  article h2,  article h3,  article h4,  article h5,  article div  {
+	article h1,  article h2,  article h3,  article h4,  article h5  {
+		 background-color: #BBD8DC;
+	}	
+	.wopf h1,  .wopf h2,  .wopf h3,  .wopf h4,  .wopf h5   {
 		 background-color: #BBD8DC;
 	}	
 	p{
 		line-height: 1.3rem;	
-	}		
+	}	
 	p.boondetails {
 		margin-bottom:0rem;
 	}
@@ -116,6 +116,24 @@
 	.toc_title {
 	    font-weight: 700;
 	    text-align: center;
+	}
+	article p, article h1,  article h2,  article h3,  article h4,  article h5,  article div  {
+		height:100%;
+	}
+	article {
+		min-height: 100vh;
+	  -webkit-column-count: 2;
+	     -moz-column-count: 2;
+	          column-count: 2;
+	          column-fill: auto;
+	          height:100%;
+  -webkit-column-rule: 1px dotted #ddd;
+     -moz-column-rule: 1px dotted #ddd;
+          column-rule: 1px dotted #ddd;
+  -webkit-column-gap: 2em;
+     -moz-column-gap: 2em;
+          column-gap: 2em;     
+          position: relative; height: 100%      	          
 	}	
   </style>
 </head>
@@ -139,8 +157,8 @@
 <div class="text-center">
 	
       	<p class="text-center"><h1>Pathfinder Society (2nd edition) Roleplaying Guild Guide</h1></p>
-      	<p class="text-center"><h2>Based of Web Version 0.03 (8/6/2019 @ 22:00)</h2></p>
-      	<p class="text-center"><h3>PDF Version August 08, 2019</h3></p>
+      	<p class="text-center"><h2>Based off <a href="http://www.organizedplayfoundation.org/encyclopedia/pfs2guide/">Web Version 0.04 (8/12/2019 @ 12:00)</a></h2></p>
+      	<p class="text-center"><h3>PDF Version August 14, 2019</h3></p>
       	<p class="text-center"><h4>Compiled by Zach Armstrong, VL Denver, Colorado</h4></p>
       	<p class="text-center"><h5>Be sure to <a href="http://www.pfsprep.com/e107_plugins/forum/forum_viewtopic.php?3138">check here</a> for the latest version.</h5></p>
 
@@ -173,11 +191,13 @@
 </div>
 <hr class="my-4" /></span><br/>
 <p class="ofb"><strong>Pathfinder Society (2nd edition) Roleplaying Guild Guide</strong> Changes since previous version:
-	<ul><li>updated Volunteer page with correct RVC emails and location titles</li>	    
+	<ul><li>Player Basics - Clarified Boon Slots Text</li>
+<li>Faction Boons - Updated Promo Boon text</li>
+<li>Volunteer Coordinators - Added Washington DC to Northeast region</li>    
 	</ul>
 </p>
 <p class="ofb"><strong>PDF</strong> Changes since previous version:
-	<ul><li>updated to  Guild Guide  v0.03</li>
+	<ul><li>updated to  Guild Guide  v0.04</li>
 		   
 	</ul>
 	</p>
@@ -186,6 +206,7 @@
 <p>If you find any errors or have suggestions, feel free to contact me at <a href="mailto:pf2guildguidepdf@traffid.com">pf2guildguidepdf@traffid.com</a></p>
 	
 		<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+		<article>
 			<a name=qsg><h1>Quick Start Guide  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 			
 
@@ -223,8 +244,9 @@
 <h3>Playtest Points</h3>
 <p>If you already have points or boons accrued during a playtest, see <a href="#special-rewards">Special Rewards</a> for information on redeeming playtest points and using playtest boons.</p>
 <p></p>
-
+</article>
 		<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+		<article>
 			<a name=opb><h1>Organized Play Basics  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 			
 
@@ -273,54 +295,54 @@
 <h2 id="special-rewards">Special Rewards</h2>
 <p>The campaign awards several different rewards to players and GMs for participating in the various Pathfinder Society programs.</p>
 <p><strong id="special-rewards-achievement-points">Achievement Points:</strong> By playing, running, and reporting Pathfinder Society games, participants earn Achievement Points (abbreviated ACP), a special online currency with which they can purchase special rewards like access to uncommon ancestries, items, spells, and more. The number of points depends on the size of the adventure and the event where it’s played. Standard events include games played in private residences and many public venues. Premier events include many conventions and special events designated by the Regional Venture-Coordinator. Premier Plus events include special shows (such as the Gen Con, Origins, and PaizoCon conventions) where Pathfinder Society has a special presence and often debuts major adventures.</p>
-<table class="table table-sm table-striped"><tbody><tr><td width="88"><strong>Adventure</strong></td>
-<td width="96"><strong>Participant</strong></td>
-<td width="96"><strong>Event</strong></td>
-<td width="96"><strong>ACP Earned</strong></td>
-</tr><tr><td width="88">Quest</td>
-<td width="96">Player</td>
-<td width="96">Standard</td>
-<td width="96">1</td>
-</tr><tr><td width="88">Quest</td>
-<td width="96">Player</td>
-<td width="96">Premier</td>
-<td width="96">1</td>
-</tr><tr><td width="88">Quest</td>
-<td width="96">Player</td>
-<td width="96">Premier Plus</td>
-<td width="96">1.5</td>
-</tr><tr><td width="88">Quest</td>
-<td width="96">GM</td>
-<td width="96">Standard</td>
-<td width="96">2</td>
-</tr><tr><td width="88">Quest</td>
-<td width="96">GM</td>
-<td width="96">Premier Plus</td>
-<td width="96">3</td>
-</tr><tr><td width="88">Scenario</td>
-<td width="96">Player</td>
-<td width="96">Standard</td>
-<td width="96">4</td>
-</tr><tr><td width="88">Scenario</td>
-<td width="96">Player</td>
-<td width="96">Premier</td>
-<td width="96">5</td>
-</tr><tr><td width="88">Scenario</td>
-<td width="96">Player</td>
-<td width="96">Premier Plus</td>
-<td width="96">6</td>
-</tr><tr><td width="88">Scenario</td>
-<td width="96">GM</td>
-<td width="96">Standard</td>
-<td width="96">8</td>
-</tr><tr><td width="88">Scenario</td>
-<td width="96">GM</td>
-<td width="96">Premier</td>
-<td width="96">10</td>
-</tr><tr><td width="88">Scenario</td>
-<td width="96">GM</td>
-<td width="96">Premier Plus</td>
-<td width="96">12</td>
+<table class="table table-sm table-striped"><tbody><tr><td width=""><strong>Adventure</strong></td>
+<td width=""><strong>Participant</strong></td>
+<td width=""><strong>Event</strong></td>
+<td width=""><strong>ACP Earned</strong></td>
+</tr><tr><td width="">Quest</td>
+<td width="">Player</td>
+<td width="">Standard</td>
+<td width="">1</td>
+</tr><tr><td width="">Quest</td>
+<td width="">Player</td>
+<td width="">Premier</td>
+<td width="">1</td>
+</tr><tr><td width="">Quest</td>
+<td width="">Player</td>
+<td width="">Premier Plus</td>
+<td width="">1.5</td>
+</tr><tr><td width="">Quest</td>
+<td width="">GM</td>
+<td width="">Standard</td>
+<td width="">2</td>
+</tr><tr><td width="">Quest</td>
+<td width="">GM</td>
+<td width="">Premier Plus</td>
+<td width="">3</td>
+</tr><tr><td width="">Scenario</td>
+<td width="">Player</td>
+<td width="">Standard</td>
+<td width="">4</td>
+</tr><tr><td width="">Scenario</td>
+<td width="">Player</td>
+<td width="">Premier</td>
+<td width="">5</td>
+</tr><tr><td width="">Scenario</td>
+<td width="">Player</td>
+<td width="">Premier Plus</td>
+<td width="">6</td>
+</tr><tr><td width="">Scenario</td>
+<td width="">GM</td>
+<td width="">Standard</td>
+<td width="">8</td>
+</tr><tr><td width="">Scenario</td>
+<td width="">GM</td>
+<td width="">Premier</td>
+<td width="">10</td>
+</tr><tr><td width="">Scenario</td>
+<td width="">GM</td>
+<td width="">Premier Plus</td>
+<td width="">12</td>
 </tr></tbody></table><p>You can redeem your Achievement Points for rewards at (Link not yet available). When you purchase a reward, you will need to assign the boon to one of your PCs, and the granted boon will auto-fill the special Chronicle sheet with your organized play number and your character’s number.</p>
 <p><strong>Playtest Points (playtest adventures):</strong> During the playtest period for Pathfinder Second Edition, players and GMs did not earn Chronicle sheets when playing the 11 playtest adventures. Instead, each participant earned a number of Playtest Points, which can now be redeemed on your <a href="https://paizo.com/cgi-bin/WebObjects/Store.woa/wa/browse?path=organizedPlay/myAccount/rewards#tabs">Organized Play account at Paizo.</a> These rewards include Limited-Use boons, the ability to start a character at 2nd or 3rd level to reflect the time spent playing the game, and other minor benefits.</p>
 <p>Because the playtest period has since closed, it is not currently possible to earn additional Playtest Points.</p>
@@ -387,11 +409,12 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 <h2>Implementing Changes</h2>
 <p>Sometimes, whether through errata or campaign clarifications, rules changes are made just before a convention, game day, or other gaming event. In such situations, if the player does not have the time or the access to resources to fix their character, they can wait to apply the changes until after the event. GMs should make a note of this delay in the notes section of the Chronicle sheet. Players must update their characters after the event</p>
 <p></p>
-
-	<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+</article>
+	<div style="page-break-after: always;  -webkit-column-break-inside: avoid; page-break-inside: avoid;"></div>
 		<a name="wopf"><h1>World of Pathfinder Society  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
-		<p>The world of Pathfinder and of Pathfinder Society is a world called Golarion. The Age of Lost Omens below provides a basic introduction to the setting; you can learn more about Golarion from Chapter 8 of the <em>Core Rulebook</em>, from upcoming Lost Omens setting books, and from the <a href="https://pathfinderwiki.com/">Pathfinder Wiki</a>.</p><p><span id="more-473"></span></p><h2 id="pathfinder-society">What Is The Pathfinder Society?</h2><p>Your character is a member of an in-game organization known as the Pathfinder Society. Pathfinder agents are adventurers who travel throughout the world, exploring new places and chronicling both history and modern lore. The most significant and exciting Pathfinder missions earn a spot in the <em>Pathfinder Chronicles</em>, an ongoing series of journals that are copied and spread far and wide to share the Society’s discoveries with the world. Pathfinders agents come from all over the world and from all walks of life; anyone willing to work together with other agents to pursue the Society’s aims is welcome to try to join the organization. Together, these tenets are captured in the Pathfinder motto: “Explore, report, cooperate.”</p><h3 id="pathfinder-society-training">Training</h3><p>Most prospective Pathfinders start their careers by traveling to the Society’s headquarters, the Grand Lodge, to receive training. This training program ensures that new agents are equipped with the skills they need to handle perilous situations, and that they are well-versed in the art of working together as a team. The training program is organized into the three Pathfinder Schools: the Spells, the Scrolls, and the Swords. The Spells, overseen by Master of Spells Sorrina Westyr, trains agents in matters concerning magic, from honing their own abilities to cast spells and rituals to teaching them how to recognize and counter spellwork that they may find in the field. The Scrolls focuses on scholarship and study, teaching agents a wide array of useful knowledge from any discipline that intrigues them, including how to properly document their discoveries. Finally, the Swords gives agents physical training, helping them improve their martial prowess and teaching them survival skills, from disarming traps and sneaking to climbing and swimming. Newly appointed Head Initiate Janira Gavix helps trainees thrive during their education and during their first few years as full agents.</p><p>A rare few Pathfinders skip the usual training process, having already distinguished themselves in some way that proves that they have what it takes to be a Pathfinder. These agents receive field commissions, which allow them to engage in a far shorter training process. Field commissioned agents have fewer responsibilities back at the Grand Lodge, but they also tend to receive less material support from the Pathfinder Society than agents who built connections there during their years of practice and study. Once an agent has completed their training, they have the freedom to travel the world and seek out places to explore.</p><h3 id="pathfinder-society-leadership">Leadership</h3><p>Most Pathfinder missions are assigned by a group of leaders known as venture-captains. Venture-captains typically spend a lot less time in the field than adventuring agents, instead spending their time managing a lodge. In the process, venture-captains watch for leads for suitable missions, handle logistics and paperwork, and scout out nearby Pathfinders who may be interested in the adventure opportunities they have to offer.  At the top of the Pathfinder Society’s hierarchy are the Decemvirate, also known as the Ten. Most of the members of The Ten hide their identities behind magical masks, but recent rumors indicate that one of the Ten has decided to go public with her identity.</p><h3 id="pathfinder-society-symbols">Symbols</h3><p>The official symbol of the Pathfinder Society is the glyph of the open road, a symbol depicting a stylized intersection of two roads under a star. Most Pathfinders carry a special type of magical compass known as a <em>wayfinder</em>; because these compasses are hard to find outside of the Society, they serve as badges of membership.</p><p></p>
+		<div class="wopf">  <p>The world of Pathfinder and of Pathfinder Society is a world called Golarion. The Age of Lost Omens below provides a basic introduction to the setting; you can learn more about Golarion from Chapter 8 of the <em>Core Rulebook</em>, from upcoming Lost Omens setting books, and from the <a href="https://pathfinderwiki.com/">Pathfinder Wiki</a>.</p><p><span id="more-473"></span></p><h2 id="pathfinder-society">What Is The Pathfinder Society?</h2><p>Your character is a member of an in-game organization known as the Pathfinder Society. Pathfinder agents are adventurers who travel throughout the world, exploring new places and chronicling both history and modern lore. The most significant and exciting Pathfinder missions earn a spot in the <em>Pathfinder Chronicles</em>, an ongoing series of journals that are copied and spread far and wide to share the Society’s discoveries with the world. Pathfinders agents come from all over the world and from all walks of life; anyone willing to work together with other agents to pursue the Society’s aims is welcome to try to join the organization. Together, these tenets are captured in the Pathfinder motto: “Explore, report, cooperate.”</p><h3 id="pathfinder-society-training">Training</h3><p>Most prospective Pathfinders start their careers by traveling to the Society’s headquarters, the Grand Lodge, to receive training. This training program ensures that new agents are equipped with the skills they need to handle perilous situations, and that they are well-versed in the art of working together as a team. The training program is organized into the three Pathfinder Schools: the Spells, the Scrolls, and the Swords. The Spells, overseen by Master of Spells Sorrina Westyr, trains agents in matters concerning magic, from honing their own abilities to cast spells and rituals to teaching them how to recognize and counter spellwork that they may find in the field. The Scrolls focuses on scholarship and study, teaching agents a wide array of useful knowledge from any discipline that intrigues them, including how to properly document their discoveries. Finally, the Swords gives agents physical training, helping them improve their martial prowess and teaching them survival skills, from disarming traps and sneaking to climbing and swimming. Newly appointed Head Initiate Janira Gavix helps trainees thrive during their education and during their first few years as full agents.</p><p>A rare few Pathfinders skip the usual training process, having already distinguished themselves in some way that proves that they have what it takes to be a Pathfinder. These agents receive field commissions, which allow them to engage in a far shorter training process. Field commissioned agents have fewer responsibilities back at the Grand Lodge, but they also tend to receive less material support from the Pathfinder Society than agents who built connections there during their years of practice and study. Once an agent has completed their training, they have the freedom to travel the world and seek out places to explore.</p><h3 id="pathfinder-society-leadership">Leadership</h3><p>Most Pathfinder missions are assigned by a group of leaders known as venture-captains. Venture-captains typically spend a lot less time in the field than adventuring agents, instead spending their time managing a lodge. In the process, venture-captains watch for leads for suitable missions, handle logistics and paperwork, and scout out nearby Pathfinders who may be interested in the adventure opportunities they have to offer.  At the top of the Pathfinder Society’s hierarchy are the Decemvirate, also known as the Ten. Most of the members of The Ten hide their identities behind magical masks, but recent rumors indicate that one of the Ten has decided to go public with her identity.</p><h3 id="pathfinder-society-symbols">Symbols</h3><p>The official symbol of the Pathfinder Society is the glyph of the open road, a symbol depicting a stylized intersection of two roads under a star. Most Pathfinders carry a special type of magical compass known as a <em>wayfinder</em>; because these compasses are hard to find outside of the Society, they serve as badges of membership.</p><p></p></div>
 		<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+		<article>
 			<a name=playbasic><h1>Player Basics  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 			
 
@@ -503,7 +526,7 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 </ol><p>Now it’s time to fine-tune your character’s appearance and personal history, including their region of origin,</p>
 <p>preferred gender pronouns, and other particulars. Make a few notes on your character’s appearance that you can use to describe your character. Read through <a href="#wopf">The World of Pathfinder Society</a> for information on the campaign setting and consider using it to inform your character’s background.</p>
 <p>You’ll also need a miniature or pawn to represent your character—Pathfinder uses a standard 1-inch grid to determine movement and tactical positioning in combat, so you need a physical representation of your character to use on the grid. Paizo produces a wide range of Pathfinder Pawns and also works with Reaper Miniatures and WizKids to offer a wide variety of gaming miniatures, so you can find just the right figure for your character.</p>
-<ol start="14"><li>Pathfinder Training</li>
+<ol start="14"><li><h3>Pathfinder Training</h3></li>
 </ol><p>Each Pathfinder Society character receives 3 networking points to represent the connections they have made in the three <a href="#pathfinder-society-training">Pathfinder Schools</a>: Spells, Scrolls, or Swords. They can invest these points among the schools, or can forgo these points and instead be a “field commissioned agent.”  <wbr/>Each of these choices bestows different benefits as described below in <a href="#pathfinder-training">Pathfinder Training.</a></p>
 <ol start="15"><li>
 <h3>Factions</h3>
@@ -515,7 +538,7 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 <p><strong>Grand Archive:</strong> Archaeology is a destructive science, and adventurers tend to be more destructive than most. If the Society is to uphold its mandate to study and preserve the past, then documentation and academic rigor are key. Yet members of the Grand Archive do not limit themselves to Absalom’s libraries; these bold explorers voyage to the most exciting sites to chronicle the past and share what they learn with the world.</p>
 <p><strong>Horizon Hunters:</strong> The Horizon Hunters faction is home to those who carry on the proud tradition of ascending the highest peaks, plumbing the darkest depths, and seeing what lies over the next hill. And as sweet as it is to discover a lost ruin or unknown vista, it’s all the better to tell wild tales about the experience and revel in the admiration of peers—particularly if your deeds are immortalized in the <em>Pathfinder Chronicles</em>, a widely distributed record of the greatest Pathfinders’ achievements and discoveries.</p>
 <p><strong>Vigilant Seal:</strong> While the Pathfinder Society’s motto is “Explore, Report, Cooperate”, members of the Vigilant Seal have their own three-part motto: “Protect, Contain, Destroy.” Members of the Vigilant Seal seek to ensure that ancient evils uncovered during their expeditions are properly dealt with—they protect ancient sites, contain possible threats, and destroy dangerous evils that can’t be safely contained.</p>
-<h4>Minor Factions</h4>
+<br name="0"/><br name="1"/><br name="2"/><br name="3"/><br name="4"/><br name="5"/><br name="6"/><h4 style="margin-top: 10px; ">Minor Factions</h4>
 <p>The two minor factions are summarized below. Detailed descriptions of the factions, as well as benefits of membership and faction goals, can be found in <a href="#factions">Factions</a>.</p>
 <p><strong>Radiant Oath:</strong> Pathfinders have a track record for thwarting evil, lending a helping hand, and presenting the Pathfinders as upstanding folk wherever they go. For the Radiant Oath, this benevolence extends beyond incidental assistance. Instead, the faction sees the Society’s broad reach as an excellent vector for assisting others the world over. Those who join the Radiant Oath swear simple vows to assist others, expanding on these promises the more they serve the faction.</p>
 <p><strong>Verdant Wheel:</strong> Nature enthusiasts of all stripes—from grizzled trackers to bright-eyed ecologists to tenacious druids—gravitate to the Society for opportunities to witness natural wonders, catalog new species, and better protect the world’s pristine realms. The Verdant Wheel has a particular fondness for sensing patterns and cycles, such as that of creation and destruction, as exemplified by new growth sprouting from a fire-ravaged field. Yet even those intent on preserving that which exists can find a welcome home here.</p>
@@ -531,29 +554,29 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 <p><em>Spells:</em> For the Lore skill, choose from Academia Lore, Architecture Lore, or Herbalism Lore. For the bonus skill feat, choose from Arcane Sense, Assurance, Quick Identification, or Recognize Spell.</p>
 <p><em>Swords:</em> For the Lore skill, choose from Gladiatorial Lore, Scouting Lore, or Warfare Lore. For the bonus skill feat, choose from Cat Fall, Experienced Smuggler, Forager, or Hefty Hauler.</p>
 <p><strong>3 Points:</strong> When selecting your free consumable item at the beginning of the adventure, you gain both one item of your level or lower from the options available, and you gain a second item whose item level is no greater than half your level (minimum 1).</p>
-<h4 id="pathfinder-training-table-all-schools-items" style="page-break-before: always; page-break-inside: avoid;">Table 1: All-Schools Items</h4>
-<table class="table table-sm table-striped"><tbody><tr><td width="10%"><strong>PC Level</strong></td>
-<td width="90%"><strong>Item Options</strong></td>
-</tr><tr><td width="10%">1</td>
-<td width="90%"><em>Holy water</em>, lesser bomb*, lesser antidote, lesser antiplague, <em>minor healing potion</em></td>
-</tr><tr><td width="10%">3</td>
-<td width="90%"><em>Lesser healing potion</em>, <em>potion of water breathing</em></td>
-</tr><tr><td width="10%">5</td>
-<td width="90%">Moderate bomb*</td>
-</tr><tr><td width="10%">7</td>
-<td width="90%"><em>Lesser potion of resistance</em>, moderate antidote, moderate antiplague, <em>moderate healing potion</em>, <em>salve of antiparalysis</em></td>
-</tr><tr><td width="10%">9</td>
-<td width="90%"><em>Potion of flying</em></td>
-</tr><tr><td width="10%">11</td>
-<td width="90%">Greater antidote, greater antiplague</td>
-</tr><tr><td width="10%">13</td>
-<td width="90%">Greater bomb*, <em>greater healing potion</em></td>
-</tr><tr><td width="10%">15</td>
-<td width="90%">Major antidote, major antiplague</td>
-</tr><tr><td width="10%">17</td>
-<td width="90%">—</td>
-</tr><tr><td width="10%">19</td>
-<td width="90%"><em>Major healing potion</em></td>
+<h4 id="pathfinder-training-table-all-schools-items">Table 1: All-Schools Items</h4>
+<table class="table table-sm table-striped"><tbody><tr><td width=""><strong>PC Level</strong></td>
+<td width=""><strong>Item Options</strong></td>
+</tr><tr><td width="">1</td>
+<td width=""><em>Holy water</em>, lesser bomb*, lesser antidote, lesser antiplague, <em>minor healing potion</em></td>
+</tr><tr><td width="">3</td>
+<td width=""><em>Lesser healing potion</em>, <em>potion of water breathing</em></td>
+</tr><tr><td width="">5</td>
+<td width="">Moderate bomb*</td>
+</tr><tr><td width="">7</td>
+<td width=""><em>Lesser potion of resistance</em>, moderate antidote, moderate antiplague, <em>moderate healing potion</em>, <em>salve of antiparalysis</em></td>
+</tr><tr><td width="">9</td>
+<td width=""><em>Potion of flying</em></td>
+</tr><tr><td width="">11</td>
+<td width="">Greater antidote, greater antiplague</td>
+</tr><tr><td width="">13</td>
+<td width="">Greater bomb*, <em>greater healing potion</em></td>
+</tr><tr><td width="">15</td>
+<td width="">Major antidote, major antiplague</td>
+</tr><tr><td width="">17</td>
+<td width="">—</td>
+</tr><tr><td width="">19</td>
+<td width=""><em>Major healing potion</em></td>
 </tr></tbody></table><p>* A bomb refers to any of the alchemical bombs detailed on pages 544–546 of the <em>Pathfinder Core Rulebook</em>.</p>
 <h4 id="pathfinder-training-table-scrolls-items">Table 2: Scrolls Items</h4>
 <table class="table table-sm table-striped"><tbody><tr><td><strong>PC Level</strong></td>
@@ -578,7 +601,7 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 <td>—</td>
 </tr><tr><td>19</td>
 <td>—</td>
-</tr></tbody></table><h4 id="pathfinder-training-table-spells-items">Table 3: Spells Items</h4>
+</tr></tbody></table><h4 id="pathfinder-training-table-spells-items" style=" -webkit-column-break-before: always;  -webkit-column-break-inside: avoid; page-break-inside: avoid;">Table 3: Spells Items</h4>
 <p>All of the consumable items granted by the Spells school take the form of magical scrolls (<em>Pathfinder Core Rulebook</em> page 564), and the item options below simply list the spells that can appear on these scrolls. When selecting a scroll, you can heighten its spell level to the Scroll Level listed below. For example, a 7th-level character could select a <em>scroll of heal</em> heightened to 4th level.</p>
 <table class="table table-sm table-striped"><tbody><tr><td><strong>PC Level</strong></td>
 <td><strong>Scroll Level</strong></td>
@@ -650,7 +673,10 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 <p><strong>Chronicle Sheet:</strong> Every Chronicle sheet includes a special boon that grants a benefit unique to the adventure or product that granted it. Chronicle sheet boons generally need to be slotted (declared active) before their benefits can be applied, though some boons are slotless and may be used as long as you have the physical copy of the Chronicle sheet present. See <a href="#boons-boon-slots"><strong>Boon Slots</strong></a> below.</p>
 <p><strong>Discounts:</strong> Some boons provide a discount on the cost in Fame or gold pieces required to purchase another boon or item. Unless otherwise noted, only one boon that provides any discount can be applied to any one purchase. This prevents multiple discounts from reducing a purchase’s cost by an unreasonable amount.</p>
 <h3 id="boons-boon-slots">Boon Slots</h3>
-<p>Each character has five boon slots available to “slot” (declare active) and use the boons they have acquired. A character chooses which boons to slot after the GM complete the mission briefing for their adventure (or introduction in the case of some Pathfinder Adventures and Pathfinder Adventure Path volumes). Three of these slots are generic and can be used to slot any kind of boon other than faction and advanced boons. Faction boons indicate the faction you have chosen to represent for this mission, which can impact the Fame you gain and possibly other elements of the scenario. Advanced boons are rare and powerful, and are typically gained through participation in a special event (such as a game with unique, hidden conditions or a special promotional event, like a playtest).</p>
+<p>Each character has a Faction boon slot, an Advanced boon slot, and three generic boon slots (for a total of 5 slots) available to “slot” (declare active) and use the boons they have acquired. A character chooses which boons to slot after the GM complete the mission briefing for their adventure (or introduction in the case of some Pathfinder Adventures and Pathfinder Adventure Path volumes).</p>
+<p>Three of these slots are generic  and can be used to slot any boon that does not have the faction and advanced or advanced trait.</p>
+<p>The Faction Boon slot typically holds the faction champion boon for the  faction you have chosen to represent for this mission, which can impact the Fame you gain and possibly other elements of the scenario.   Faction Boons can only hold boons that have the faction trait, and no other type of boon.  Boons with the faction trait cannot go anywhere other than the Faction Boon Slot.</p>
+<p>The Advanced Boon slot can hold boons with the Advanced trait or any boon that does not have the Faction trait. Advanced boons are rare and powerful, and are typically gained through participation in a special event or scenario (such as a game with unique, hidden conditions, “special” scenarios or a special promotional event, like a playtest).</p>
 <p><strong>Boon Traits:</strong> Many boons have one or more traits, some of which indicate the boon’s flavor and others which convey special rules for using the boon. Future rewards or effects may also interact with particular types of boons in special ways. The following are the current boon types:</p>
 <ul><li>An <strong>advanced</strong> boon is typically more powerful or complex than other boons, and it can be slotted only in the advanced boon slot (not a generic boon slot). As a result, you can only use one advanced boon at a time.</li>
 <li>An <strong>ally</strong> boon represents an NPC who accompanies and assists your character. Unless you choose to purposefully endanger that NPC (an act that might result in your gaining Infamy, depending on the circumstances) or an effect specifically targets an Ally boon, this NPC stays out of harm’s way, does not interfere with combat, and takes up no space during encounters.</li>
@@ -668,8 +694,8 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 <li>A <strong>trial</strong> boon represents an ongoing difficulty that is difficult to end. A trial boon typically requires that you slot it before you can slot any other boons, and trial boons typically have a special condition you must fulfill to end them.</li>
 </ul><h2 id="downtime">Downtime</h2>
 <p>Upon completing an adventure that grants XP, you gain days of Downtime that can be spent in a variety of ways. (See Organized Play Basics, under <a href="#downtime">Downtime</a>, for how many days each type of adventure grants.)  These include attempting checks to Earn Income and Craft items, as well as retraining. Certain other activities may be available depending on boons or other circumstances as described in the adventure. Typically, once you have begun a Downtime task you cannot begin another until the first task is completed, though some exceptions exist (see <a href="#downtime-crafting">Crafting</a> and <a href="#downtime-retraining">Retraining</a> below). You can’t save up Downtime from multiple Chronicle sheets, but you can start or continue an activity such as Crafting an item that requires multiple adventures’ worth of Downtime to complete</p>
-<p><strong id="downtime-earn-income">Earn Income: </strong>Earning Income is the most common Downtime activity. If you are using your Downtime for any other purposes, they must be completed first before you attempt your check to Earn Income. For each 8 day unit of Downtime you spend (including units where you complete multiple activities, such as spending 7 days retraining and then 1 day Earning Income), you attempt one check to Earn Income, using the result to calculate your total earnings for that block of Downtime. The Task Level of you Earn Income check is equal to your level – 2 (minimum 0) by default (GMs should check <strong>Table</strong> <strong>10–5: DCs by Level </strong>on page 503 of the <em>Pathfinder Core Rulebook</em> to calculate the DC), though some boons may allow you to attempt checks against higher-level tasks as a special reward. A check to Earn Income does not carry beyond the 8-day cycle for which you attempt the check.</p>
-<p><strong id="downtime-crafting">Crafting: </strong>Some characters may choose to spend their time Crafting a piece of equipment. This works as described on pages 503–504 the <em>Core Rulebook</em>. Use the DC based on the level of the item from <strong>Table 10–5</strong> for common items, applying the hard DC adjustment from <strong>Table 10–6</strong> to the DC for uncommon items and the very hard DC adjustment for rare items. You can Craft uncommon or rare items only if you find their formulas. Crafting requires that you spend the first 4 days of a block of Downtime preparing before attempting your check to Craft; unlike Earning Income, Crafting tasks can be continued across as many Downtime days as necessary until the item is completed or you pay the remainder of the Price required to finish the item.</p>
+<p><strong id="downtime-earn-income">Earn Income: </strong>Earning Income is the most common Downtime activity. If you are using your Downtime for any other purposes, they must be completed first before you attempt your check to Earn Income. For each 8 day unit of Downtime you spend (including units where you complete multiple activities, such as spending 7 days retraining and then 1 day Earning Income), you attempt one check to Earn Income, using the result to calculate your total earnings for that block of Downtime. The Task Level of your Earn Income check is equal to your level – 2 (minimum 0) by default (GMs should check <strong>Table</strong> <strong>10–5: DCs by Level </strong>on page 503 of the <em>Pathfinder Core Rulebook</em> to calculate the DC), though some boons may allow you to attempt checks against higher-level tasks as a special reward. A check to Earn Income does not carry beyond the 8-day cycle for which you attempt the check.</p>
+<p><strong id="downtime-crafting">Crafting: </strong>Some characters may choose to spend their time Crafting a piece of equipment. The rules for crafting can be found on pages 244-245 and 503–504 the <em>Core Rulebook</em>. Use the DC based on the level of the item from <strong>Table 10–5</strong> for common items, applying the hard DC adjustment from <strong>Table 10–6</strong> to the DC for uncommon items and the very hard DC adjustment for rare items. You can Craft uncommon or rare items only if you find their formulas. Crafting requires that you spend the first 4 days of a block of Downtime preparing before attempting your check to Craft; unlike Earning Income, Crafting tasks can be continued across as many Downtime days as necessary until the item is completed or you pay the remainder of the Price required to finish the item.</p>
 <p><strong id="downtime-retraining">Retraining:</strong> You can also use Downtime to retrain certain abilities and swap them out for new ones. This works as described in the <em>Core Rulebook</em>. Retraining a feat, skill increase, or a spell in your spell repertoire takes 7 days of Downtime, while retraining a selectable class feature, such as a druid order, takes 28 days. If you level up when still in the process of retraining a selectable class feature such as a druid order, you may choose an option that would be legal for the new order you are retraining to, though you may not use that ability until the retraining is complete.</p>
 <p>For example, suppose Lini is 5th level and has decided that she would prefer to return Droogami to the wild and master the arts of a storm order druid instead. She begins the retraining process but will not complete it until she has completed her first scenario as a 6th-level character; Lini may select the Storm Retribution feat as her 6th-level feat, but cannot use it until she completes her retraining and becomes a storm order druid. Similarly, any feats Lini has that were contingent on her previous order cease being functional once Lini has attained her new order; for example if Lini had chosen Mature Animal Companion as her 4th-level feat but no longer had the Animal Companion feat after retraining to become a storm order druid, the feat would simply be nonfunctional until she either gained an animal companion or retrained Mature Animal Companion for another feat.</p>
 <p>You can also retrain your <a href="#pathfinder-training">Pathfinder training</a> —that is, your selection between Spells, Scrolls, Swords, or field-commissioned agent. Doing so takes 14 days of Downtime, during which you adjust your level of affiliation with these aspects of the Pathfinder Society.</p>
@@ -684,10 +710,11 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 <h2>Hero Points</h2>
 <p>In addition to the Hero Point you start each game with, the GM may award you Hero Points during play for particularly heroic deeds. You can spend Hero Points to reroll checks or even avoid death (<em>Core Rulebook</em> 467).</p>
 <h2>Retail Incentive Program</h2>
-<p>Pathfinder Society Organized Play rewards players who show their support by purchasing and using items featuring campaign insignia, faction logos, or Pathfinder branding. If you display any of the merchandise described above at the beginning of an adventure, your character gains one additional common consumable from their associated <a href="#pathfinder-training">Pathfinder School</a>(s) lists  (Spells, Swords, Scrolls, or All Schools) with a level no greater than half their character’s (minimum 1) for use during that adventure.</p>
+<p>*We are working on the RIP and will have it available shortly.</p>
 <p></p>
-
+<div style="-webkit-column-break-after: before;"><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br><br></div></article>
 		<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+		<article>
 			<a name=gmbasic><h1>GM Basics  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 			
 
@@ -722,7 +749,7 @@ GM Instructions: </em>Be sure to resolve any Downtime activity that requires a c
 </ul><h2 id="reviewing-chronicle-sheets">Reviewing Chronicle Sheets</h2>
 <p>If time permits, GMs and coordinators should spend a few minutes reviewing players’ Chronicle sheets at the start of an event slot. These reviews can happen for a variety of reasons. For example, GMs may need to check to the Adventure Summary section to learn what your character did in a previous adventure, and GMs and coordinators can review Chronicle sheets to ensure that they are filled out correctly. These reviews can help ensure that players understand the rules of Pathfinder and the Pathfinder Society Campaign, as well as catch the errors that naturally crop up in the course of play. When reviewing a Chronicle sheet, if you notice anything that seems amiss, you can ask the player to explain any discrepancies to you. Remember that errors are far more likely to be honest mistakes than intentional cheating, and that it’s possible that they aren’t errors at all. And most errors turn out to be detrimental to characters, not to their advantage!</p>
 <p>When you ask the player about a discrepancy, speak with the player calmly, nicely, and with an open mind. Resolve any issues as fairly as possible. For example, if the character selected an option that they did not have access to or that was not available to their character, let them pick another option instead. If they did not pay the full price for an item they have, they can pay for it in full, or, if they haven’t used it yet, simply remove the item from their character’s gear. If they paid too much for an item, refund them the extra they paid in the “items sold” section of their Chronicle sheet. Check with your event coordinator, Venture-Captain, or Venture-Lieutenant if you are unsure of how to fix a mistake, or if you and the player cannot come to an agreement about a fair resolution. Remember that the game is supposed to be fun, so waste as little time as possible on drama and spend as much time as possible providing an exciting, action-packed scenario for your players.</p>
-<h2 id="challenge-points" style="page-break-before: always; page-break-inside: avoid;">Challenge Points</h2>
+<h2 id="challenge-points" style=" -webkit-column-break-inside: avoid; page-break-inside: avoid;">Challenge Points</h2>
 <p>In a typical home game, the PCs would all be the same level and face challenges tailored to their level. In an organized play environment, though, there needs to be more flexibility to make it easier for players whose characters are of different levels to participate in the same adventure.</p>
 <p>To determine how to adjust an adventure to accommodate different character levels, Pathfinder Society uses a system called Challenge Points, in which you assign each PC a number of points based on their level and how it fits into the adventure tier, add up all of the PCs’ points, and compares the sum to a table. Based on the outcome, you’d use either the adventure’s lower or higher subtier, and it might apply a small bonus to the enemy creatures and check DCs to simulate a slightly higher-level adventure.</p>
 <p>Some adventures have only one subtier. For these adventures, use the challenge point system to determine any adjustments. If the table would direct you to run the high subtier, instead run the adventure with the level bump and the 6-player adjustment.</p>
@@ -811,7 +838,7 @@ OR High subtier with level bump</td>
 <p>However, awarding fewer than the maximum Treasure Bundles shouldn’t be a punitive tool. Unless recovering a Treasure Bundle is tied to succeeding at key skill checks or making key choices, PCs who overcome an encounter with creative solutions should earn the same reward they would have earned by defeating that foe in combat. Adventures call out special exceptions, such as treasure only accessible if the PCs investigate a particular secret door or agree to an NPC’s proposal. If the PCs’ actions allow them to bypass the area or encounter where they would have the chance to recover the treasure, it’s okay to relocate the opportunity to a later point with similar requirements to recover the treasure.</p>
 <p><strong>Example:</strong> The PCs are supposed to attack a keep, and they successfully trick the guards into escorting the PCs to the final encounter with the evil warlord rather than fighting their way in. By tricking the guards, the PC not only skip the guards fight (which has 2 Treasure Bundles associated with it) and never have a chance to pick up the easily-discovered magic wand in the guardroom (1 additional Treasure Bundle), but they also skip a fight with a minotaur (who guards coins representing 2 Treasure Bundles). The PCs should receive credit for these rewards anyway; they overcame the guards encounter, bypassed the minotaur, and would have easily recovered the treasure afterward.</p>
 <p>However, escorting the PCs through the keep also means the PCs neither explore the side rooms nor have a chance to find the secret vault where a golden chalice is hidden (1 Treasure Bundle). Finding this vault would have required a PC Searching during exploration and succeeding at a DC 20 Perception check, and the room’s rewards cite that the PCs should only receive this reward if they find the room and recover the chalice. In this case the PCs should have a fair opportunity to find the chalice anyway, such as the secret door and room being relocated to the warlord’s throne room with the same Perception check DC.</p>
-<h4 id="table-3-bundle-value" style="page-break-before: always; page-break-inside: avoid;">Table 3: Treasure Bundle Value</h4>
+<h4 id="table-3-bundle-value" style="page-break-before: always;  -webkit-column-break-inside: avoid; page-break-inside: avoid;">Table 3: Treasure Bundle Value</h4>
 <table class="table table-sm table-striped"><tbody><tr><td><strong>Level</strong></td>
 <td><strong>Treasure Bundle</strong></td>
 <td><strong>Scenario Max Reward</strong></td>
@@ -875,130 +902,8 @@ OR High subtier with level bump</td>
 </tr><tr><td>20</td>
 <td>3680</td>
 <td>36800</td>
-</tr></tbody></table><h4 id="table-4-total-value">Table 4: Total Value of Treasure Bundles Earned (gp)</h4>
-<table class="table table-sm table-striped" width=""><tbody><tr><td width="41">Level</td>
-<td width="54"><strong>1 </strong>
-<p><strong>Bundle </strong></p></td>
-<td width="60"><strong>2 Bundles</strong></td>
-<td width="60"><strong>3 Bundles</strong></td>
-<td width="60"><strong>4 Bundles</strong></td>
-<td width="60"><strong>5 Bundles</strong></td>
-<td width="60"><strong>6 Bundles</strong></td>
-<td width="60"><strong>7 Bundles</strong></td>
-<td width="60"><strong>8 Bundles</strong></td>
-<td width="60"><strong>9 Bundles</strong></td>
-<td width="60"><strong>10 Bundles</strong></td>
-</tr><tr><td width="41"><strong>1</strong></td>
-<td width="54">1.4</td>
-<td width="60">2.8</td>
-<td width="60">4.2</td>
-<td width="60">5.6</td>
-<td width="60">7</td>
-<td width="60">8.4</td>
-<td width="60">9.8</td>
-<td width="60">11.2</td>
-<td width="60">12.6</td>
-<td width="60">14</td>
-</tr><tr><td width="41"><strong>2</strong></td>
-<td width="54">2.2</td>
-<td width="60">4.4</td>
-<td width="60">6.6</td>
-<td width="60">8.8</td>
-<td width="60">11</td>
-<td width="60">13.2</td>
-<td width="60">15.4</td>
-<td width="60">17.6</td>
-<td width="60">19.8</td>
-<td width="60">22</td>
-</tr><tr><td width="41"><strong>3</strong></td>
-<td width="54">3.8</td>
-<td width="60">7.6</td>
-<td width="60">11.4</td>
-<td width="60">15.2</td>
-<td width="60">19</td>
-<td width="60">22.8</td>
-<td width="60">26.6</td>
-<td width="60">30.4</td>
-<td width="60">34.2</td>
-<td width="60">38</td>
-</tr><tr><td width="41"><strong>4</strong></td>
-<td width="54">6.4</td>
-<td width="60">12.8</td>
-<td width="60">19.2</td>
-<td width="60">25.6</td>
-<td width="60">32</td>
-<td width="60">38.4</td>
-<td width="60">44.8</td>
-<td width="60">51.2</td>
-<td width="60">57.6</td>
-<td width="60">64</td>
-</tr><tr><td width="41"><strong>5</strong></td>
-<td width="54">10</td>
-<td width="60">20</td>
-<td width="60">30</td>
-<td width="60">40</td>
-<td width="60">50</td>
-<td width="60">60</td>
-<td width="60">70</td>
-<td width="60">80</td>
-<td width="60">90</td>
-<td width="60">100</td>
-</tr><tr><td width="41"><strong>6</strong></td>
-<td width="54">15</td>
-<td width="60">30</td>
-<td width="60">45</td>
-<td width="60">60</td>
-<td width="60">75</td>
-<td width="60">90</td>
-<td width="60">105</td>
-<td width="60">120</td>
-<td width="60">135</td>
-<td width="60">150</td>
-</tr><tr><td width="41"><strong>7</strong></td>
-<td width="54">22</td>
-<td width="60">44</td>
-<td width="60">66</td>
-<td width="60">88</td>
-<td width="60">110</td>
-<td width="60">132</td>
-<td width="60">154</td>
-<td width="60">176</td>
-<td width="60">198</td>
-<td width="60">220</td>
-</tr><tr><td width="41"><strong>8</strong></td>
-<td width="54">30</td>
-<td width="60">60</td>
-<td width="60">90</td>
-<td width="60">120</td>
-<td width="60">150</td>
-<td width="60">180</td>
-<td width="60">210</td>
-<td width="60">240</td>
-<td width="60">270</td>
-<td width="60">300</td>
-</tr><tr><td width="41"><strong>9</strong></td>
-<td width="54">44</td>
-<td width="60">88</td>
-<td width="60">132</td>
-<td width="60">176</td>
-<td width="60">220</td>
-<td width="60">264</td>
-<td width="60">308</td>
-<td width="60">352</td>
-<td width="60">396</td>
-<td width="60">440</td>
-</tr><tr><td width="41"><strong>10</strong></td>
-<td width="54">60</td>
-<td width="60">120</td>
-<td width="60">180</td>
-<td width="60">240</td>
-<td width="60">300</td>
-<td width="60">360</td>
-<td width="60">420</td>
-<td width="60">480</td>
-<td width="60">540</td>
-<td width="60">600</td>
-</tr></tbody></table><h2 id="infamy-and-alignment-infractions">Infamy and Alignment Infractions</h2>
+</tr></tbody></table><h4 id="table-4-total-value">Table 4: Total Value of Treasure Bundles Earned (gp)</h4> <table class="table table-sm table-striped" width=""><tbody><tr><td width="">Level</td><td width=""><strong>1 </strong><p><strong>Bundle </strong></p></td><td width=""><strong>2 Bundles</strong></td><td width=""><strong>3 Bundles</strong></td><td width=""><strong>4 Bundles</strong></td><td width=""><strong>5 Bundles</strong></td></tr><tr><td width=""><strong>1</strong></td><td width="">1.4</td><td width="">2.8</td><td width="">4.2</td><td width="">5.6</td><td width="">7</td></tr><tr><td width=""><strong>2</strong></td><td width="">2.2</td><td width="">4.4</td><td width="">6.6</td><td width="">8.8</td><td width="">11</td></tr><tr><td width=""><strong>3</strong></td><td width="">3.8</td><td width="">7.6</td><td width="">11.4</td><td width="">15.2</td><td width="">19</td></tr><tr><td width=""><strong>4</strong></td><td width="">6.4</td><td width="">12.8</td><td width="">19.2</td><td width="">25.6</td><td width="">32</td></tr><tr><td width=""><strong>5</strong></td><td width="">10</td><td width="">20</td><td width="">30</td><td width="">40</td><td width="">50</td></tr><tr><td width=""><strong>6</strong></td><td width="">15</td><td width="">30</td><td width="">45</td><td width="">60</td><td width="">75</td></tr><tr><td width=""><strong>7</strong></td><td width="">22</td><td width="">44</td><td width="">66</td><td width="">88</td><td width="">110</td></tr><tr><td width=""><strong>8</strong></td><td width="">30</td><td width="">60</td><td width="">90</td><td width="">120</td><td width="">150</td></tr><tr><td width=""><strong>9</strong></td><td width="">44</td><td width="">88</td><td width="">132</td><td width="">176</td><td width="">220</td></tr><tr><td width=""><strong>10</strong></td><td width="">60</td><td width="">120</td><td width="">180</td><td width="">240</td><td width="">300</td></tr></tbody></table><table class="table table-sm table-striped" width=""><tbody><tr><td width="">Level</td><td width=""><strong>6 Bundles</strong></td><td width=""><strong>7 Bundles</strong></td><td width=""><strong>8 Bundles</strong></td><td width=""><strong>9 Bundles</strong></td><td width=""><strong>10 Bundles</strong></td></tr><tr><td width=""><strong>1</strong></td><td width="">8.4</td><td width="">9.8</td><td width="">11.2</td><td width="">12.6</td><td width="">14</td></tr><tr><td width=""><strong>2</strong></td><td width="">13.2</td><td width="">15.4</td><td width="">17.6</td><td width="">19.8</td><td width="">22</td></tr><tr><td width=""><strong>3</strong></td><td width="">22.8</td><td width="">26.6</td><td width="">30.4</td><td width="">34.2</td><td width="">38</td></tr><tr><td width=""><strong>4</strong></td><td width="">38.4</td><td width="">44.8</td><td width="">51.2</td><td width="">57.6</td><td width="">64</td></tr><tr><td width=""><strong>5</strong></td><td width="">60</td><td width="">70</td><td width="">80</td><td width="">90</td><td width="">100</td></tr><tr><td width=""><strong>6</strong></td><td width="">90</td><td width="">105</td><td width="">120</td><td width="">135</td><td width="">150</td></tr><tr><td width=""><strong>7</strong></td><td width="">132</td><td width="">154</td><td width="">176</td><td width="">198</td><td width="">220</td></tr><tr><td width=""><strong>8</strong></td><td width="">180</td><td width="">210</td><td width="">240</td><td width="">270</td><td width="">300</td></tr><tr><td width=""><strong>9</strong></td><td width="">264</td><td width="">308</td><td width="">352</td><td width="">396</td><td width="">440</td></tr><tr><td width=""><strong>10</strong></td><td width="">360</td><td width="">420</td><td width="">480</td><td width="">540</td><td width="">600</td></tr></tbody></table>
+<h2 id="infamy-and-alignment-infractions">Infamy and Alignment Infractions</h2>
 <p>Players are responsible for their characters’ actions. A player’s perception of what their character would do in a particular situation is never more important than the experience of other players at the table.</p>
 <p>Alignment infractions—evil acts committed by PCs in Organized Play—are a touchy subject. Killing an innocent, wanton destruction, and other acts that can be construed as evil might be considered alignment infractions. Ultimately, you are the final authority at the table, but you must warn any player whose character is deviating from his chosen alignment. This warning must be clear, and you must make sure that the player understands the warning and the actions that initiated the warning. The PC should be given the opportunity to correct the behavior, justify it, or face the consequences. You can issue a warning to the player through a “feeling” he receives from his deity, a vision he is given, his conscience talking to him, or some other similar roleplaying event.</p>
 <p><strong>Infamy:</strong> When a character expresses the intent to perform a wantonly evil or callously criminal action and you inform them that their action would be considered an evil action, if the character still persists in performing the action, apply a point of Infamy to the character. Up to a certain limit, gaining Infamy does not mandate a change in the character’s alignment, but rather, represents a step towards becoming evil.</p>
@@ -1031,8 +936,9 @@ OR High subtier with level bump</td>
 <li>They gain the ability to <a href="#replaying-adventures">replay an adventure</a> that grants one Chronicle sheet once per glyph earned.</li>
 </ul><p>Paizo recognizes all 5-glyph GMs by name on blogs on <a href="https://paizo.com/"><strong>paizo.com</strong></a>.</p>
 <p></p>
-
+</article>
 		<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+		<article>
 			<a name=factions><h1>Factions  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 			
 
@@ -1095,9 +1001,9 @@ OR High subtier with level bump</td>
 <p><strong>Motto:</strong> Truth Sprouts from the Ashes</p>
 <p><strong>Objectives:</strong> The Verdant Wheel has no single vision of what it means to preserve nature, leaving it to an individual’s interpretation and each region’s unique circumstances to determine the best course of action. Agents travel far and wide to study the strange and pristine, and their journeys often bring them into conflict with undead, fiends, and aberrations. Most of all, the faction is a home for those who revel in the glories of nature in its many forms—even the occasional alien landscape beyond Golarion itself.</p>
 <p></p>
-
-	<div style="page-break-after: always;   page-break-inside: avoid;"></div>
-		<a name="factionboons"><h1>Faction Boons  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
+</article>
+	<div style="page-break-after: always;   -webkit-column-break-inside: avoid; page-break-inside: avoid;"></div>
+		<article><a name="factionboons"><h1>Faction Boons  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 		
 
 <p>Factions offer a variety of rewards. These a PC can access by gaining Reputation with a particular faction and then spending Fame to purchase specific boons. In addition to faction-specific rewards, there are numerous generic rewards that are accessible to all factions based on the amount of Reputation a PC's earned. The rewards take the form of boons, which follow the same rules as those found in the <a href="#player-rewards-boons">Boons</a> section.  You can slot only one boon with the promotional trait at the same time.</p>
@@ -1256,7 +1162,7 @@ OR High subtier with level bump</td>
 <td>—</td>
 <td>8</td>
 <td></td>
-</tr></tbody></table><h3>Grand Archive (Major)</h3>
+</tr></tbody></table><h3 style="page-break-before: always;  -webkit-column-break-inside: avoid; page-break-inside: avoid;">Grand Archive (Major)</h3>
 <p>The following is a list of purchasable rewards offered by the Grand Archive faction.</p>
 <h4>Table 4: Grand Archive Boons</h4>
 <table class="table table-sm table-striped" id="table-4:-grand-archive-boons"><tbody><tr><td><strong>Name</strong></td>
@@ -1871,18 +1777,18 @@ Downtime</p>
 <p class="boondetails"><strong>Cost</strong> 2 Fame</p>
 <p class="boondetails">No matter how far afield you travel, it seems there's always a fellow explorer ready to help you return home in record time and enjoy a few extra days to recuperate. You can purchase this boon at the end of an adventure that granted at least 4 XP while the GM is filling out Chronicle sheets. When you do so, you gain an additional 4 days of Downtime.</p>
 <p class="boontitle"><strong><a id="curse-breaker">Curse Breaker</a></strong></p>
-<p class="boontitle"><strong><a id="downtime">Downtime</a></strong></p>
+<p class="boondetails">Downtime</p>
 <p class="boondetails"><strong>Prerequisites</strong> Vigilant Seal Tier 2</p>
 <p class="boondetails"><strong>Cost</strong> 2 Fame</p>
 <p class="boondetails">You have been entrusted with an accursed item from the Society's vaults, and you can spend your time in the Grand Lodge patiently unraveling its malign influence. When you acquire this boon choose a permanent magic item of your level or lower to which you have access. While you have this boon slotted, you can spend Downtime erasing the item's stubborn curse. This uses the same rules as you would to Craft the item, with the following exceptions. First, you must use Arcana, Nature, Occultism, or Religion in place of Crafting (such as to determine the progress you make and the maximum item level you can work on). Second, your faction provides you the necessary tools and workspace to perform this operation. Third, you only need to spend 2 days of Downtime before attempting your first skill check and subsequently beginning to reduce the item's effective cost. You must keep this boon slotted until you finish uncursing the item.</p>
 <p class="boondetails"><strong>Special</strong> You can purchase this boon multiple times. Each time you do so, you select a different item.</p>
 <p class="boontitle"><strong><a id="crafter's-workshop">Crafter's Workshop</a></strong></p>
-<p class="boontitle"><strong><a id="downtime">Downtime</a></strong></p>
+<p class="boondetails">Downtime</p>
 <p class="boondetails"><strong>Prerequisites</strong> Envoy's Alliance Tier 2</p>
 <p class="boondetails"><strong>Cost</strong> 4 Fame</p>
 <p class="boondetails">Your friends in the Envoy's Alliance share crafting materials and collaborate to create new items more efficiently. When you Craft during Downtime, you do not need to spend 4 days at work before attempting a Crafting check. However, your fellow faction members expect your assistance in return. After slotting this boon to reduce the time needed to Craft an item, you must keep it slotted until you have finished crafting that item.</p>
 <p class="boontitle"><strong><a id="practiced-medic">Practiced Medic</a></strong></p>
-<p class="boontitle"><strong><a id="downtime">Downtime</a></strong></p>
+<p class="boondetails">Downtime</p>
 <p class="boondetails"><strong>Prerequisites</strong> Radiant Oath Tier 1</p>
 <p class="boondetails"><strong>Cost</strong> 1 Fame</p>
 <p class="boondetails">By spending your off hours administering medical aid to those in need, you have developed extraordinary first aid instincts. While you have this boon slotted, you can spend Downtime to provide medical services to others. Once you have expended 8 days of Downtime in this way, this boon becomes slotless, and you can expend the boon as a free action before attempting a Medicine check to Administer First Aid, Treat Disease, Treat Poison, or Treat Wounds. You improve your check's degree of success by one step (such as if you roll a failure, you get a success instead); the boon is not expended if your original roll is a critical success. Once you expend this boon, it provides no other benefit.</p>
@@ -1894,21 +1800,21 @@ Downtime</p>
 <p class="boondetails">You have claimed a small plot where you can grow, study, or experiment with a wide variety of animals, fungi, and plants, providing you a wealth of healthful reagents. You can purchase antidotes, antiplagues, barkskin potions, elixirs of life, healing potions, potions of flying, and potions of leaping at a 10% discount.</p>
 <p class="boontitle"><strong><a id="promotional-accessory">Promotional Accessory</a></strong></p>
 <p class="boondetails">promotional</p>
-<p class="boondetails"><strong>Prerequisites</strong> Player is wearing or carrying an accessory that promotes Pathfinder Society, such as XX</p>
+<p class="boondetails"><strong>Prerequisites</strong> Player is wearing or carrying an accessory that promotes Pathfinder Society, such as pins, folios, bags, or other non-clothing items.</p>
 <p class="boondetails"><strong>Cost</strong> 0 Fame</p>
 <p class="boondetails">Up to twice per adventure, you can spend an action to reduce the severity of your frightened or stupefied condition by 1.</p>
 <p class="boontitle"><strong><a id="promotional-vestments">Promotional Vestments</a></strong></p>
 <p class="boondetails">promotional</p>
-<p class="boondetails"><strong>Prerequisites</strong> Player is wearing clothing that promotes Pathfinder Society, such as a volunteer shirt, a shirt for a Pathfinder Lodge, or Pathfinder-themed cosplay</p>
+<p class="boondetails"><strong>Prerequisites</strong> Player is wearing clothing that promotes Pathfinder Society, such as a volunteer shirt, Pathfinder branded shirt/hoodie, or Pathfinder-themed cosplay. Pathfinder Lodge shirts count as a vestment in the lodge of origin.</p>
 <p class="boondetails"><strong>Cost</strong> 0 Fame</p>
 <p class="boondetails">When you use a Hero Point to reroll a check, add a +1 cirumstance bonus to the reroll.</p>
 <p class="boontitle"><strong><a id="promotional-service-award">Promotional Service Award</a></strong></p>
 <p class="boondetails">promotional</p>
-<p class="boondetails"><strong>Prerequisites</strong> Have a campaign coin</p>
+<p class="boondetails"><strong>Prerequisites</strong> Been awarded a campaign coin or other campaign award.</p>
 <p class="boondetails"><strong>Cost</strong> 0 Fame</p>
-<p class="boondetails">Volunteers who make exceptional contributions to Organized Play can earn campaign coins as a recognition of their hard work. If you have a campaign coin, you gain a bonus Hero Point at the beginning of every adventure. In addition to the normal powers of a Hero Point, you can spend this special Hero Point to allow another player to reroll a check.</p>
+<p class="boondetails">Volunteers who make exceptional contributions to Organized Play can earn a wayfinder or campaign coins as a recognition of their hard work. If you have a campaign coin, you gain a bonus Hero Point at the beginning of every adventure. In addition to the normal powers of a Hero Point, you can spend this special Hero Point to allow another player to reroll a check.</p>
 <p class="boontitle"><strong><a id="naturalist">Naturalist</a></strong></p>
-<p class="boontitle"><strong><a id="downtime">Downtime</a></strong></p>
+<p class="boondetails">Downtime</p>
 <p class="boondetails"><strong>Prerequisites</strong> Verdant Wheel Tier 1</p>
 <p class="boondetails"><strong>Cost</strong> 2 Fame</p>
 <p class="boondetails">When you acquire this boon choose an alchemical item or potion of your level or lower to which you have access. While you have this boon slotted, you can spend Downtime to search for rare herbs and ingredients in order to craft up to a full batch of this item (typically 4). This uses the same rules as you would to Craft the item, with the following exceptions. First, you must use Nature, Survival, or Herbalism Lore in place of Crafting (such as to determine the progress you make and the maximum item level you can work on). Second, your faction provides you the necessary tools and workspace to perform this operation. Third, you only need to spend 2 days of Downtime before attempting your first skill check and subsequently beginning to reduce the item's effective cost. You must keep this boon slotted until you finish crafting the items.</p>
@@ -1945,8 +1851,9 @@ Downtime</p>
 
 
 
-
+</article>
 		<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+		<article>
 			<a name=legback><h1>Legacy Backgrounds  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 			
 
@@ -2008,7 +1915,7 @@ Downtime</p>
 <p>You’re trained in the Medicine or Stealth skill, plus a Lore skill related to the terrain you lived in while on the demiplane (such as Cave Lore or Desert Lore). You gain the Assurance skill feat with the skill you chose to become trained in (Medicine or Stealth).</p>
 <p><strong>Special</strong> You can select this background only if you have earned credit for at least 5 First Edition scenarios from Season 10 of the Pathfinder Society organized play campaign.</p>
 <p></p>
-
+</article>
 		<div style="page-break-after: always;   page-break-inside: avoid;"></div>
 			<a name=chopt><h1>Character Options  </h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 			
@@ -2079,7 +1986,7 @@ No uncommon options in this book are available to Pathfinder Society characters.
 <p><strong>Worship:</strong> In Organized Play, worship refers to a relationship between a character and a deity where the character gains a mechanical benefit (e.g., a cleric’s spells and abilities or access to options tied to that deity) in exchange for their dedicated worship. A PC may worship only one deity and must choose a deity that accepts worshippers of their alignment. However, the PC cannot participate in or glorify activities that violate the Pathfinder baseline or otherwise incur an alignment infraction (see <em>Pathfinder Core</em> <em>Rulebook</em> 486 and <a href="#infamy-and-alignment-infractions">Infamy and Alignment Infractions</a>).</p>
 <p></p>
 
-	<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+	<div style="page-break-after: always;   -webkit-column-break-inside: avoid; page-break-inside: avoid;"></div>
 		<a name="vol"><h1>Volunteer Coordinators</h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 		
 
@@ -2100,7 +2007,7 @@ No uncommon options in this book are available to Pathfinder Society characters.
 <p class="opr"><strong>Gulf (United States):  </strong>Regional Venture-Coordinator <strong>Dominick Trascritti</strong><strong>(</strong>dominicktrascritti@yahoo.com):  Alabama, Florida, Georgia, Louisiana, Mississippi, Texas</p>
 <p class="opr"><strong>Isles (Europe):  </strong>Regional Venture-Coordinator <strong>Ian Hawthorne</strong><strong>(</strong>Ian.hawthorne1@virgin.net):  Ireland, United Kingdom</p>
 <p class="opr"><strong>Mediterranean (Europe, Asia):</strong> Regional Venture-Coordinator <strong>Dave Harrison</strong>(paizoconuk@hotmail.com):  Croatia, Israel, Italy, Portugal, , Spain, Turkey, and United Arab Emirates</p>
-<p class="opr"><strong>Northeast (United States, Canada):  </strong>Regional Venture-Coordinator <strong>Dan Simons </strong>(<a href="mailto:pfs.rvc.northeast@gmail.com">pfs.rvc.northeast@gmail.com</a>): Atlantic Canada, Connecticut, Delaware, Maine, Maryland, Massachusetts, New Hampshire, New Jersey, New York, Pennsylvania, Rhode Island, and Vermont</p>
+<p class="opr"><strong>Northeast (United States, Canada):  </strong>Regional Venture-Coordinator <strong>Dan Simons </strong>(<a href="mailto:pfs.rvc.northeast@gmail.com">pfs.rvc.northeast@gmail.com</a>): Atlantic Canada, Connecticut, Delaware, Maine, Maryland, Massachusetts, New Hampshire, New Jersey, New York, Pennsylvania, Rhode Island, Vermont, and Washington D.C.</p>
 <p class="opr"><strong>Northwest (United States, Canada):  </strong>Regional Venture-Coordinator <strong>Walter Sheppard </strong>(pullmanpathfinder@gmail.com):  Alaska, Alberta, British Columbia, Idaho, Montana, Oregon, Washington, and</p>
 <p class="opr"><strong>River (United States):  </strong>Regional Venture-Coordinator <strong>Troy Schnack</strong>(videogamesetc@hotmail.com): Arkansas, Iowa, Missouri</p>
 <p class="opr"><strong></strong><strong>Southwest (United States, Central &amp; South America):</strong> Regional Venture-Coordinator <strong>Eric Brittain (</strong>sdpathfinder@gmail.com):  Argentina, Arizona, Brazil, California, Chile, Mexico, Nevada, New Mexico, Uruguay, and Utah</p>
@@ -2112,6 +2019,7 @@ No uncommon options in this book are available to Pathfinder Society characters.
 
 <div class="roster">
 		<div style="page-break-after: always;   page-break-inside: avoid;"></div>
+		<article>
 			<a name=tm><h1>Trademarks and Licenses</h1></a>&nbsp;&nbsp;<a href="#toc">^ back to top</a>
 			
 
@@ -2183,7 +2091,8 @@ No uncommon options in this book are available to Pathfinder Society characters.
 <p><strong>Customer Service Team </strong>• Virginia Jordan, Samantha Phelan, and Diego Valdez</p>
 <p><strong>Warehouse Team </strong>• Laura Wilkes Carey, Mika Hawkins, Heather Payne, Jeff Strand, and Kevin Underwood</p>
 
-</div>
+</article></div>
+				</article>
 		      </div>
 		    </div>
 		  </div>

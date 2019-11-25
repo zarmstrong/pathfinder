@@ -4,8 +4,8 @@ import urllib2
 from bs4 import BeautifulSoup
 import boto3
 
-previousver = "0.03"
-previousdate ="8/6/2019 @ 22:00"
+previousver = "0.07"
+previousdate ="9/30/2019 @ 12:00"
 
 def getGuideVersion():
 	page = urllib2.urlopen("http://www.organizedplayfoundation.org/encyclopedia/pfs2guide/")
@@ -26,10 +26,10 @@ def emailNotify(pv,pd,cv):
 	AWS_REGION = "us-east-1"
 	CHARSET = "UTF-8"
 	SUBJECT = "PFS Guide 2.0 Updated"	
-	BODY_TEXT = """Previous version: """ + pv + """
-	Current Date: """ + pd + """
-	Current version: """ + cv[0] + """
-	Previous Date:""" + cv[1] 
+	BODY_TEXT = """Previous version: """ + pv + """<br/>
+	Previous Date: """ + pd + """<br/>
+	Current version: """ + cv[0] + """<br/>
+	Current Date:""" + cv[1] 
 
 	client = boto3.client('ses',region_name=AWS_REGION)
 	# Try to send the email.

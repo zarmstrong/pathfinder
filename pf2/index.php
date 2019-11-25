@@ -33,9 +33,15 @@
      page-break-after: always; 
      page-break-inside: avoid;
   }
+  h4,h5 {
+    line-height: 1.4rem;
+  }
+  li {
+    line-height: 1.3rem;
+  }
   p {
     margin-bottom:0.8rem;
-    line-height: 1.3rem;
+    line-height: 1.25rem;
   }
   table tr {
    line-height: 1rem; 
@@ -56,8 +62,8 @@
     <div class="row">
       <div class="col-md-12 text-center" id="toprowcol">
         <h4>PFS 2E GM Quick Reference Sheet</h4>
-
-        <h5>by Zach Armstrong</h5>
+        <h5>by Zach Armstrong -- Updated August 14, 2019 -- Version 4</h5>
+        <h5 class="d-print-none">print at 51% for US Letter and 52% for A4, 55% for Legal but print only 1 page</h5>
       </div>
     </div>
 
@@ -318,8 +324,7 @@
         Downtime must be spent at the end of the session or it expires; it cannot be
         stockpiled for later use. However, players can spend their Downtime to start or
         continue an activity such as Crafting an item that requires multiple adventures'
-        worth of Downtime to complete.</p>        
-
+        worth of Downtime to complete. Roll once per 8 days, DC = Level - 2</p>
  
       </div>
 
@@ -331,13 +336,10 @@
           <thead>
           <tr>
             <th scope="col">Level</th>
-
             <th scope="col">DC</th>
             <th scope="col">Level</th>
-
             <th scope="col">DC</th>
-                                    <th scope="col">Spell Level</th>
-
+            <th scope="col">Spell Level</th>
             <th scope="col">DC</th>
           </tr>
         </thead><tbody>
@@ -531,6 +533,7 @@
         accordingly<br /><br />
 
 <h4>Income Earned per Day of Downtime</h4>
+<h6>Roll once per 8 days, DC = Level - 2</h6>
   <table class="table table-sm table-striped">
     <thead>
 
@@ -695,7 +698,7 @@
 
         <td>7 sp</td>
 
-        <td>4 cp</td>
+        <td>4 gp</td>
 
         <td>5 gp</td>
 
@@ -709,7 +712,7 @@
 
         <td>8 sp</td>
 
-        <td>5 cp</td>
+        <td>5 gp</td>
 
         <td>6 gp</td>
 
@@ -723,7 +726,7 @@
 
         <td>9 sp</td>
 
-        <td>6 cp</td>
+        <td>6 gp</td>
 
         <td>8 gp</td>
 
@@ -737,7 +740,7 @@
 
         <td>1 gp</td>
 
-        <td>7 cp</td>
+        <td>7 gp</td>
 
         <td>10 gp</td>
 
@@ -751,7 +754,7 @@
 
         <td>1 gp, 5 sp</td>
 
-        <td>8 cp</td>
+        <td>8 gp</td>
 
         <td>15 gp</td>
 
@@ -765,7 +768,7 @@
 
         <td>2 gp</td>
 
-        <td>10 cp</td>
+        <td>10 gp</td>
 
         <td>20 gp</td>
 
@@ -779,7 +782,7 @@
 
         <td>2 gp, 5 sp</td>
 
-        <td>13 cp</td>
+        <td>13 gp</td>
 
         <td>25 gp</td>
 
@@ -793,7 +796,7 @@
 
         <td>3 gp</td>
 
-        <td>15 cp</td>
+        <td>15 gp</td>
 
         <td>30 gp</td>
 
@@ -807,7 +810,7 @@
 
         <td>4 gp</td>
 
-        <td>20 cp</td>
+        <td>20 gp</td>
 
         <td>45 gp</td>
 
@@ -821,7 +824,7 @@
 
         <td>6 gp</td>
 
-        <td>30 cp</td>
+        <td>30 gp</td>
 
         <td>60 gp</td>
 
@@ -835,7 +838,7 @@
 
         <td>8 gp</td>
 
-        <td>40 cp</td>
+        <td>40 gp</td>
 
         <td>75 gp</td>
 

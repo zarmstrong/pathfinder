@@ -8,13 +8,22 @@ from datetime import datetime, date
 import weasyprint
 from weasyprint import HTML
 
-revisiondata = "- Revision #2"
+revisiondata = ""
 revisiondata=""
 
-orgplaychangelog ="""<li>0.07 – Clarified Boons a little more.  Moved Changelog to the bottom of the index page</li>
+orgplaychangelog ="""<li>
+0.08 – Large errata and clarification update
+<ul>
+<li>GM Basics – Clarified a number of rules.  Added Edicts and Anathema to the Table Variation section.</li>
+<li>Glossary – Added "Assign a Chronicle" and "Apply a chronicle"
+<li>Player Basics – Added RIP, clarified "Purchasing Guidelines"
+<li>Organized Play Basics – updated Purchasing Guidelines, Chronicle sheet rules, and clarified who can make rulings for the campaign.</li>
+<li>Character Options – Added link to additional options.</li></ul>
+</li>
+<li>0.07 – Clarified Boons a little more.  Moved Changelog to the bottom of the index page</li>
 <li>0.06 – Fixed some typos and cut and paste errors</li> """
 
-pdfchangelog ="""<li>updated to  Guild Guide  v0.07</li>  """
+pdfchangelog ="""<li>updated to  Guild Guide  v0.08</li>  """
 
 todolist = """ """
 
@@ -122,6 +131,23 @@ def replaceURLs(soup):
 		
 	return soup
 
+def removeChangelogAndBackTo(soup):
+	#output=output.replace('<p><small>Back to: <span class="c-message__body" data-qa="message-text" dir="auto"></span></small></p>','')
+	#output=output.replace('<p><small>Back to: </small></p>','')
+	smalls = soup.findAll("small")
+	for small in smalls:
+		if "back to:" in small.text.lower():
+			small.decompose()
+		if "changelog" in small.text.lower():
+			small.decompose()	
+	ps = soup.findAll("p")
+	for p in ps:
+		if "current version:" in p.text.lower():
+			p.decompose()			
+		if "changelog" in p.text.lower():
+			p.decompose()				
+	return soup
+
 def removeCrapFromTags(soup):
 	for tag in soup():
 		for attribute in ["rel", "target"]: # You can also add id,style,etc in the list
@@ -150,6 +176,7 @@ def cleanUpPage(soup):
 	changeHtags(soup)
 	removeCrapFromTags(soup)
 	fixTableStyles(soup)
+	removeChangelogAndBackTo(soup)
 	return soup
 
 def getPages(pagelist):
@@ -168,11 +195,13 @@ def getPages(pagelist):
 		cleanUpPage(soup)
 
 		pagecontent = soup.find('div', attrs={'class':'entry-content'})
-		pagecontent.findChildren()[0].decompose()
-		pagecontent.findChildren()[len(pagecontent.findChildren())-1].decompose()
-		pagecontent.findChildren()[len(pagecontent.findChildren())-1].decompose()
-		pagecontent.findChildren()[len(pagecontent.findChildren())-1].decompose()
-		
+		# pagecontent.findChildren()[0].decompose()
+		# pagecontent.findChildren()[len(pagecontent.findChildren())-1].decompose()
+		# pagecontent.findChildren()[len(pagecontent.findChildren())-1].decompose()
+		# pagecontent.findChildren()[len(pagecontent.findChildren())-1].decompose()
+		navcontent = pagecontent.find('nav', attrs={'class':'navigation post-navigation'})
+		if navcontent:
+			navcontent.decompose()		
 
 
 		pagebreak_tag = soup.new_tag('div', style="page-break-after: always;   page-break-inside: avoid;")
@@ -501,7 +530,6 @@ def factionBoons():
 
 
 
-
 def printPageHeader():
 	printout= """<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
 <head>
@@ -733,7 +761,6 @@ output=output+ '<div class="roster">'
 output=output+getPages(pagelist)
 print "printing footer"
 output=output+ '</div>'
-
 output=output+dofooter()
 
 print "saving file"

@@ -53,18 +53,10 @@ chromeOptions.add_argument("disable-infobars")
 chromeOptions.add_argument("--headless") 
 
 driver = webdriver.Chrome(chrome_options=chromeOptions) 
-# driver.get("https://paizo.com/store/pathfinder/society/season10")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season9")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season8")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season7")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season6")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season5")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season4")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season3")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season2")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season1")
-driver.get("https://paizo.com/store/pathfinder/society/past/season0")
-
+# driver.get("https://paizo.com/store/starfinder/society/season1")
+# driver.get("https://paizo.com/store/starfinder/society/season2")
+# driver.get("https://paizo.com/store/starfinder/society/season3")
+driver.get("https://paizo.com/store/starfinder/society/quests")
 driver.implicitly_wait(100)
 
 #print driver.page_source
@@ -118,7 +110,7 @@ for link in links:
 	else:
 		try:
 			gamenum=numbername[0].split("-",1)
-			gamename=numbername[1].strip().replace('"','\\"').replace("'","\\'")
+			gamename=numbername[1].strip().replace(u"\u2018", "'").replace(u"\u2019", "'").replace("&rsquo;", "'").replace(u"\u2014", u"-").replace(u"\u2013", u"-").replace(u"\u2012", u"-").replace(u"\u2011", u"-").replace(u"\u2010", u"-").replace('"','\\"').replace("'","\\'")
 			gameseason=gamenum[0].strip()
 			scenarionum=gamenum[1].strip()
 			
@@ -142,7 +134,11 @@ for link in links:
 			levels=lineparts[1].replace(" ", "").replace(".","").split("-",1)
 			levellow=levels[0].strip()
 			levelhigh=levels[1].strip()
-
+		elif "Scenario Tag" in line:
+			taglist=line.split(":")[1]
+			taglist=taglist.strip()
+			if taglist=="None":
+				taglist=""
 		elif "Written by" in line or "Release: " in line or "nario is designed for play in Path" in line:
 			#do nothing
 			output=output
@@ -156,7 +152,7 @@ for link in links:
 	#print "gamename: "+gamename
 	#print "levels: " +levels
 	#print output
-	lineout="INSERT IGNORE INTO scenarios (gametype,gameseason,scenarionum,scenarioname,scenariodesc,levellow,levelhigh) VALUES ('"+gametype+"','"+gameseason+"','"+scenarionum+"','"+gamename+"','"+output.replace('"','\\"').replace("'","\\'").rstrip("\n\r").rstrip("\n")+"','"+levellow+"','"+levelhigh+"');"
+	lineout="INSERT IGNORE INTO scenarios (gametype,gameseason,scenarionum,scenarioname,scenariodesc,levellow,levelhigh,scenariotags) VALUES ('"+gametype+"','"+gameseason+"','"+scenarionum+"','"+gamename+"','"+output.replace('"','\\"').replace("'","\\'").rstrip("\n\r").rstrip("\n")+"','"+levellow+"','"+levelhigh+"','"+taglist+"');"
 	print lineout.replace(u"\u2018", "\'").replace(u"\u2019", "\'").replace("&rsquo;", "\'").replace(u"\u2014", u"-").replace(u"\u2013", u"-").replace(u"\u2012", u"-").replace(u"\u2011", u"-").replace(u"\u2010", u"-").replace(u"\u201d", u'\"').replace(u"\u201c", u'\"').replace(" (PFRPG)", "").replace(" PDF","")
 # results = soup.find('div', attrs={'class':'result-container'})
 

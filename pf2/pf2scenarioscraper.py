@@ -53,18 +53,9 @@ chromeOptions.add_argument("disable-infobars")
 chromeOptions.add_argument("--headless") 
 
 driver = webdriver.Chrome(chrome_options=chromeOptions) 
-# driver.get("https://paizo.com/store/pathfinder/society/season10")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season9")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season8")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season7")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season6")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season5")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season4")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season3")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season2")
-# driver.get("https://paizo.com/store/pathfinder/society/past/season1")
-driver.get("https://paizo.com/store/pathfinder/society/past/season0")
-
+gameseason="1"
+driver.get("https://paizo.com/store/pathfinder/society/season1")
+# driver.get("https://paizo.com/store/pathfinder/society/season1")
 driver.implicitly_wait(100)
 
 #print driver.page_source
@@ -111,14 +102,14 @@ for link in links:
 	game=scenariotitleinfo[0].strip()
 	numbername=scenariotitleinfo[1].split(":",1)
 	if "Quest" in scenariotitleinfo[0]:
-		gamename=scenariotitleinfo[1].replace("'","\'")
-		gameseason="9"
-		scenarionum="Q"
-		gamenum="q"
+		questnum=scenariotitleinfo[1].split(":")[0]
+		gamename="Quest " + questnum+": " +scenariotitleinfo[1].split(":")[1].strip().replace(u"\u2018", "\'").replace(u"\u2019", "\'").replace("&rsquo;", "\'").replace(u"\u2014", u"-").replace(u"\u2013", u"-").replace(u"\u2012", u"-").replace(u"\u2011", u"-").replace(u"\u2010", u"-").replace(u"\u201d", u'\"').replace(u"\u201c", u'\"').replace('"','\\"').replace("'","\\'")
+		scenarionum="Q"+questnum
+		gamenum="q"+questnum
 	else:
 		try:
 			gamenum=numbername[0].split("-",1)
-			gamename=numbername[1].strip().replace('"','\\"').replace("'","\\'")
+			gamename=numbername[1].strip().replace(u"\u2018", "\'").replace(u"\u2019", "\'").replace("&rsquo;", "\'").replace(u"\u2014", u"-").replace(u"\u2013", u"-").replace(u"\u2012", u"-").replace(u"\u2011", u"-").replace(u"\u2010", u"-").replace(u"\u201d", u'\"').replace(u"\u201c", u'\"').replace('"','\\"').replace("'","\\'")
 			gameseason=gamenum[0].strip()
 			scenarionum=gamenum[1].strip()
 			
@@ -126,12 +117,8 @@ for link in links:
 			gameseason="0"
 			scenarionum=gamenum[0].strip()
 
-	if "Pathfinder Society Scenario" in game:
-		gametype="pfs"
-	if "Pathfinder Society Quest" in game:
-		gametype="pfs"		
-	if "Starfinder Society Scenario" in game:
-		gametype="sfs"
+	if "Pathfinder Society Scenario" in game or "Pathfinder Society Quest" in game:
+		gametype="pf2"
 	levels="0-0"
 	levellow="1"
 	levelhigh="1"
@@ -142,8 +129,15 @@ for link in links:
 			levels=lineparts[1].replace(" ", "").replace(".","").split("-",1)
 			levellow=levels[0].strip()
 			levelhigh=levels[1].strip()
-
-		elif "Written by" in line or "Release: " in line or "nario is designed for play in Path" in line:
+			if "(" in levelhigh:
+				levelhigh=levelhigh.split("(")[0]
+		elif "scenario tag" in line.lower():
+			taglist=line.split(":")[1].replace(u"\u2018", "'").replace(u"\u2019", "'").replace("&rsquo;", "'").replace(u"\u2014", u"-").replace(u"\u2013", u"-").replace(u"\u2012", u"-").replace(u"\u2011", u"-").replace(u"\u2010", u"-").replace('"','\\"').replace("'","\\'")
+			taglist=taglist.strip()
+			if taglist=="None":
+				taglist=""
+				output=output
+		elif "Written by" in line or "Release: " in line or "nario is designed for play in Path" in line or "Online Resources" in line:
 			#do nothing
 			output=output
 		else:
@@ -156,7 +150,7 @@ for link in links:
 	#print "gamename: "+gamename
 	#print "levels: " +levels
 	#print output
-	lineout="INSERT IGNORE INTO scenarios (gametype,gameseason,scenarionum,scenarioname,scenariodesc,levellow,levelhigh) VALUES ('"+gametype+"','"+gameseason+"','"+scenarionum+"','"+gamename+"','"+output.replace('"','\\"').replace("'","\\'").rstrip("\n\r").rstrip("\n")+"','"+levellow+"','"+levelhigh+"');"
+	lineout="INSERT IGNORE INTO scenarios (gametype,gameseason,scenarionum,scenarioname,scenariodesc,levellow,levelhigh,scenariotags) VALUES ('"+gametype+"','"+gameseason+"','"+scenarionum+"','"+gamename+"','"+output.replace('"','\\"').replace("'","\\'").rstrip("\n\r").rstrip("\n")+"','"+levellow+"','"+levelhigh+"','"+taglist+"');"
 	print lineout.replace(u"\u2018", "\'").replace(u"\u2019", "\'").replace("&rsquo;", "\'").replace(u"\u2014", u"-").replace(u"\u2013", u"-").replace(u"\u2012", u"-").replace(u"\u2011", u"-").replace(u"\u2010", u"-").replace(u"\u201d", u'\"').replace(u"\u201c", u'\"').replace(" (PFRPG)", "").replace(" PDF","")
 # results = soup.find('div', attrs={'class':'result-container'})
 

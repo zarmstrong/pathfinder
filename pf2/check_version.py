@@ -4,8 +4,8 @@ import urllib2
 from bs4 import BeautifulSoup
 import boto3
 
-previousver = "0.07"
-previousdate ="9/30/2019 @ 12:00"
+previousver = "0.08"
+previousdate ="02/10/2020 – 22:00"
 
 def getGuideVersion():
 	page = urllib2.urlopen("http://www.organizedplayfoundation.org/encyclopedia/pfs2guide/")
@@ -15,8 +15,8 @@ def getGuideVersion():
 	for para in paras:
 		if "current version:" in para.text.lower():
 			verline= para.text.split("\n")
-			vernum= (verline[0].split(":")[1]).strip()
-			verdate = verline[1].replace("Current Version Date","").replace(u'\u2013',"@").strip()
+			vernum= (verline[0].split(":")[1]).strip().replace(u"\u2018", "\'").replace(u"\u2019", "\'").replace("&rsquo;", "\'").replace(u"\u2014", "-").replace(u"\u2012", "-").replace(u"\u2011", u"-").replace(u"\u2010", "-").replace(u"\u201d", '\"').replace(u"\u201c", '\"').replace('"','\\"').replace("'","\\'").replace(u'\u2013',"@")
+			verdate = verline[1].replace("Current Version Date","").replace(u"\u2018", "\'").replace(u"\u2019", "\'").replace("&rsquo;", "\'").replace(u"\u2014", "-").replace(u"\u2012", "-").replace(u"\u2011", u"-").replace(u"\u2010", "-").replace(u"\u201d", '\"').replace(u"\u201c", '\"').replace('"','\\"').replace("'","\\'").replace(u'\u2013',"@").strip()
 			verstr = "Guide version " + str(vernum)+" (" + verdate +")"
 			return [ vernum, verdate]
 
@@ -26,10 +26,10 @@ def emailNotify(pv,pd,cv):
 	AWS_REGION = "us-east-1"
 	CHARSET = "UTF-8"
 	SUBJECT = "PFS Guide 2.0 Updated"	
-	BODY_TEXT = """Previous version: """ + pv + """<br/>
+	BODY_TEXT = u"""Previous version: """ + pv + """<br/>
 	Previous Date: """ + pd + """<br/>
 	Current version: """ + cv[0] + """<br/>
-	Current Date:""" + cv[1] 
+	Current Date:""" + cv[1]
 
 	client = boto3.client('ses',region_name=AWS_REGION)
 	# Try to send the email.
@@ -68,16 +68,17 @@ def emailNotify(pv,pd,cv):
 
 def compareversion(pv, pd):
 	curver=getGuideVersion()
+	print(curver)
 	if pv != curver[0]:
 		emailNotify(pv,pd,curver)
-		print "Version number mismatch"
+		print("Version number mismatch")
 		return
 	if pd != curver[1]:
 		emailNotify(pv,pd,curver)
-		print "Version date mismatch"
+		print("Version date mismatch")
 		return
 
-	print "Looks the same"		
+	print("Looks the same")
 	return
 
 if __name__ == "__main__":
